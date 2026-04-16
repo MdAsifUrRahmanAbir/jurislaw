@@ -3,25 +3,25 @@ class AppStrings {
   AppStrings._();
 
   // App
-  static const String appName = 'My App';
-  static const String appTagline = 'Your journey starts here';
+  static const String appName = 'Jurisheba';
+  static const String appTagline = 'Your Legal Partner';
 
   // Splash
-  static const String loading = 'Loading...';
+  static const String loading = 'Loading Jurisheba...';
 
   // Onboard
   static const String skip = 'Skip';
   static const String next = 'Next';
   static const String getStarted = 'Get Started';
-  static const String onboard1Title = 'Welcome to MyApp';
+  static const String onboard1Title = 'Legal Help at Hand';
   static const String onboard1Subtitle =
-      'Discover amazing features tailored just for you.';
-  static const String onboard2Title = 'Stay Organized';
+      'Connect with top lawyers across Bangladesh instantly.';
+  static const String onboard2Title = 'Book Consultations';
   static const String onboard2Subtitle =
-      'Manage everything in one place with ease.';
-  static const String onboard3Title = 'Achieve More';
+      'Schedule video, audio or chat sessions with ease.';
+  static const String onboard3Title = 'Secure Payments';
   static const String onboard3Subtitle =
-      'Reach your goals faster with powerful tools.';
+      'Pay via bKash, Nagad, or Cards securely.';
 
   // Auth
   static const String login = 'Login';
@@ -78,7 +78,7 @@ class AppStrings {
 
   // Navigation
   static const String home = 'Home';
-  static const String explore = 'Explore';
-  static const String notifications_ = 'Notifications';
+  static const String lawyer = 'Lawyer';
+  static const String search = 'Search';
   static const String more = 'More';
 }

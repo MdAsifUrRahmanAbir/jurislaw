@@ -25,6 +25,8 @@ class SplashController extends GetxController {
   void _goToScreen() {
     if (LocalStorage.isLoggedIn()) {
       Get.offAllNamed(Routes.bottomNav);
+    } else if (!LocalStorage.isLanguageSet()) {
+      Get.offAllNamed(Routes.languageSelection);
     } else if (LocalStorage.isOnboardDone()) {
       Get.offAllNamed(Routes.login);
     } else {

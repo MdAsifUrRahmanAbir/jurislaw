@@ -6,37 +6,50 @@ import '../../../../routes/app_pages.dart';
 
 class LoginController extends GetxController {
   final formKey = GlobalKey<FormState>();
-  final emailCtrl = TextEditingController();
-  final passwordCtrl = TextEditingController();
-
-  final isPasswordVisible = false.obs;
+  final phoneCtrl = TextEditingController();
+  final otpCtrl = TextEditingController();
+  
+  final isOtpSent = false.obs;
   final isLoading = false.obs;
 
-  void togglePasswordVisibility() =>
-      isPasswordVisible.value = !isPasswordVisible.value;
-
-  String? validateEmail(String? v) {
-    if (v == null || v.isEmpty) return 'Email is required';
-    if (!GetUtils.isEmail(v)) return 'Enter a valid email address';
+  String? validatePhone(String? v) {
+    if (v == null || v.isEmpty) return 'Phone number is required';
+    if (v.length < 10) return 'Enter a valid phone number';
     return null;
   }
 
-  String? validatePassword(String? v) {
-    if (v == null || v.isEmpty) return 'Password is required';
-    if (v.length < 6) return 'Password must be at least 6 characters';
+  String? validateOtp(String? v) {
+    if (v == null || v.isEmpty) return 'OTP is required';
+    if (v.length < 4) return 'Enter 4 digit OTP';
     return null;
   }
 
-  Future<void> login() async {
+  Future<void> sendOtp() async {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
     try {
-      // TODO: replace with AuthApiServices.signInProcessApi(body: {...})
-      await Future.delayed(const Duration(milliseconds: 800)); // Simulated
+      // Simulate sending OTP
+      await Future.delayed(const Duration(seconds: 1));
+      isOtpSent.value = true;
+      AppSnackBar.success('OTP sent to your phone');
+    } catch (e) {
+      AppSnackBar.error(e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
-      // On success:
-      await LocalStorage.saveToken(token: 'simulated_token_here');
-      await LocalStorage.saveEmail(email: emailCtrl.text.trim());
+  Future<void> verifyOtp() async {
+    if (otpCtrl.text.length < 4) {
+      AppSnackBar.error('Please enter a valid OTP');
+      return;
+    }
+    isLoading.value = true;
+    try {
+      // Simulate verifying OTP
+      await Future.delayed(const Duration(seconds: 1));
+      
+      await LocalStorage.savePhone(phone: phoneCtrl.text.trim());
       await LocalStorage.setLoggedIn(value: true);
 
       Get.offAllNamed(Routes.bottomNav);
@@ -48,12 +61,11 @@ class LoginController extends GetxController {
   }
 
   void goToRegister() => Get.toNamed(Routes.register);
-  void goToForgotPassword() {}
 
   @override
   void onClose() {
-    emailCtrl.dispose();
-    passwordCtrl.dispose();
+    phoneCtrl.dispose();
+    otpCtrl.dispose();
     super.onClose();
   }
 }

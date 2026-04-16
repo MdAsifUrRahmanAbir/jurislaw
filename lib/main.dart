@@ -7,6 +7,7 @@ import 'app/core/services/local_storage_service.dart';
 import 'app/core/services/firebase_service.dart';
 import 'app/core/theme/app_theme.dart';
 import 'app/routes/app_pages.dart';
+import 'app/core/localization/translations.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,7 +41,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'My App',
+      title: 'Jurisheba',
+      translations: AppTranslations(),
+      locale: const Locale('bn'), 
+      fallbackLocale: const Locale('en'),
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,

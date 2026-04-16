@@ -6,6 +6,7 @@ abstract class Routes {
 
   static const splash = '/splash';
   static const onboard = '/onboard';
+  static const languageSelection = '/language_selection';
   static const login = '/login';
   static const register = '/register';
   static const bottomNav = '/bottom_nav';
@@ -15,4 +16,6 @@ abstract class Routes {
   static const settings = '/settings';
   static const changePassword = '/settings/change_password';
   static const twofaSecurity = '/settings/twofa_security';
+  static const lawyerDetails = '/lawyer_details';
+  static const intakeForm = '/intake_form';
 }

@@ -7,50 +7,54 @@ class AppColors {
   // --------------------
   // Brand / Primary Colors
   // --------------------
-  static const Color primary = Color(0xFF4A90E2);        // Main brand color
-  static const Color primaryLight = Color(0xFF7AB4F5);   // Light variant
-  static const Color primaryDark = Color(0xFF0066B3);    // Dark variant
+  static const Color primary = Color(0xFF1A1F2B);        // Deep dark navy for premium feel
+  static const Color primaryLight = Color(0xFF2C3545);
+  static const Color primaryDark = Color(0xFF0D121A);
 
-  static const Color accent = Color(0xFFFFC107);         // Accent color
-  static const Color accentLight = Color(0xFFFFF350);
-  static const Color accentDark = Color(0xFFC79100);
+  static const Color gold = Color(0xFFC5A35D);           // Premium gold for highlights
+  static const Color goldLight = Color(0xFFE5CC91);
+  static const Color goldDark = Color(0xFF917336);
+
+  static const Color accent = gold;
 
   // --------------------
   // Background / Scaffold
   // --------------------
-  static const Color scaffoldBackground = Color(0xFFF5F6FA);
+  static const Color scaffoldBackground = Color(0xFFF9FAFB);
   static const Color cardBackground = Colors.white;
-  static const Color darkScaffoldBackground = Color(0xFF1C1C1E);
-  static const Color darkCardBackground = Color(0xFF2C2C2E);
+  static const Color darkScaffoldBackground = Color(0xFF121212);
+  static const Color darkCardBackground = Color(0xFF1E1E1E);
+
+  static const Color chipBackground = Color(0xFFFFF7E6); // Light beige/cream for chips
 
   // --------------------
   // Text Colors
   // --------------------
-  static const Color textPrimary = Color(0xFF222222);
-  static const Color textSecondary = Color(0xFF666666);
-  static const Color textHint = Color(0xFF999999);
+  static const Color textPrimary = Color(0xFF1A1F2B);
+  static const Color textSecondary = Color(0xFF6B7280);
+  static const Color textHint = Color(0xFF9CA3AF);
   static const Color textLight = Colors.white;
 
   // --------------------
   // Status Colors
   // --------------------
-  static const Color success = Color(0xFF28A745);
-  static const Color warning = Color(0xFFFFC107);
-  static const Color error = Color(0xFFDC3545);
-  static const Color info = Color(0xFF17A2B8);
+  static const Color success = Color(0xFF10B981);
+  static const Color warning = Color(0xFFF59E0B);
+  static const Color error = Color(0xFFEF4444);
+  static const Color info = Color(0xFF3B82F6);
 
   // --------------------
   // Grey Shades
   // --------------------
-  static const Color greyLight = Color(0xFFEEEEEE);
-  static const Color grey = Color(0xFFBDBDBD);
-  static const Color greyDark = Color(0xFF616161);
+  static const Color greyLight = Color(0xFFF3F4F6);
+  static const Color grey = Color(0xFFD1D5DB);
+  static const Color greyDark = Color(0xFF4B5563);
 
   // --------------------
   // Optional Semantic / Extra
   // --------------------
-  static const Color divider = Color(0xFFE0E0E0);
-  static const Color shadow = Color(0x29000000); // 16% opacity black
+  static const Color divider = Color(0xFFE5E7EB);
+  static const Color shadow = Color(0x0F000000); 
   static const Color transparent = Colors.transparent;
 
   // --------------------

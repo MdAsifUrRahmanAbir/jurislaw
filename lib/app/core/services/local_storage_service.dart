@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 const String _tokenKey = 'tokenKey';
 const String _nameKey = 'nameKey';
 const String _emailKey = 'emailKey';
+const String _phoneKey = 'phoneKey';
 const String _imageKey = 'imageKey';
 const String _isLoggedInKey = 'isLoggedInKey';
 const String _isOnBoardKey = 'isOnBoardDoneKey';
@@ -50,6 +51,10 @@ class LocalStorage {
       _box.write(_emailKey, email);
   static String getEmail() => _box.read(_emailKey) ?? '';
 
+  static Future<void> savePhone({required String phone}) =>
+      _box.write(_phoneKey, phone);
+  static String getPhone() => _box.read(_phoneKey) ?? '';
+
   static Future<void> saveImage({required String url}) =>
       _box.write(_imageKey, url);
   static String? getImage() => _box.read<String>(_imageKey);
@@ -87,6 +92,8 @@ class LocalStorage {
     final locale = Locale(langSmall, langCap);
     Get.updateLocale(locale);
   }
+
+  static bool isLanguageSet() => _box.read(_languageKey) != null;
 
   static List<String> getLanguage() => [
     _box.read(_langSmallKey) ?? 'en',

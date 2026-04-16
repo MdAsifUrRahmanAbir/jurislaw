@@ -4,6 +4,8 @@ import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/onboard/bindings/onboard_binding.dart';
 import '../modules/onboard/views/onboard_view.dart';
+import '../modules/language_selection/bindings/language_selection_binding.dart';
+import '../modules/language_selection/views/language_selection_view.dart';
 import '../modules/auth/login/bindings/login_binding.dart';
 import '../modules/auth/login/views/login_view.dart';
 import '../modules/auth/registration/bindings/registration_binding.dart';
@@ -22,6 +24,10 @@ import '../modules/settings/change_password/bindings/change_password_binding.dar
 import '../modules/settings/change_password/views/change_password_view.dart';
 import '../modules/settings/twofa_security/bindings/twofa_security_binding.dart';
 import '../modules/settings/twofa_security/views/twofa_security_view.dart';
+import '../modules/lawyer_details/bindings/lawyer_details_binding.dart';
+import '../modules/lawyer_details/views/lawyer_details_view.dart';
+import '../modules/intake_form/bindings/intake_form_binding.dart';
+import '../modules/intake_form/views/intake_form_view.dart';
 
 part 'app_routes.dart';
 
@@ -32,6 +38,13 @@ class AppPages {
   static const initial = Routes.splash;
 
   static final routes = [
+    // ... existed ...
+    GetPage(
+      name: Routes.intakeForm,
+      page: () => const IntakeFormView(),
+      binding: IntakeFormBinding(),
+      transition: Transition.fadeIn,
+    ),
     GetPage(
       name: Routes.splash,
       page: () => const SplashView(),
@@ -43,6 +56,12 @@ class AppPages {
       page: () => const OnboardView(),
       binding: OnboardBinding(),
       transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.languageSelection,
+      page: () => const LanguageSelectionView(),
+      binding: LanguageSelectionBinding(),
+      transition: Transition.fadeIn,
     ),
     GetPage(
       name: Routes.login,
@@ -96,6 +115,12 @@ class AppPages {
       name: Routes.twofaSecurity,
       page: () => const TwofaSecurityView(),
       binding: TwofaSecurityBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: Routes.lawyerDetails,
+      page: () => const LawyerDetailsView(),
+      binding: LawyerDetailsBinding(),
       transition: Transition.rightToLeft,
     ),
   ];

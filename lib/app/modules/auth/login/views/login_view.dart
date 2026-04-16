@@ -13,8 +13,8 @@ class LoginView extends GetView<LoginController> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
+      backgroundColor: AppColors.scaffoldBackground,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSizes.paddingLarge),
@@ -24,99 +24,93 @@ class LoginView extends GetView<LoginController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: AppSizes.gapXXLarge),
-
-                // Header
-                Text(
-                  'Welcome Back 👋',
-                  style: TextStyle(
-                    fontSize: AppSizes.fontXXXLarge,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? AppColors.textLight : AppColors.textPrimary,
-                    height: 1.2,
+                
+                // Branding/Logo could go here
+                Center(
+                  child: Container(
+                    padding: const EdgeInsets.all(AppSizes.paddingMid),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(AppSizes.radiusMid),
+                    ),
+                    child: const Icon(Icons.gavel_rounded, color: AppColors.gold, size: 50),
                   ),
                 ),
+                
+                const SizedBox(height: AppSizes.gapXXLarge),
+
+                Obx(() => Text(
+                  controller.isOtpSent.value ? 'Enter OTP' : 'Welcome to Jurisheba',
+                  style: const TextStyle(
+                    fontSize: AppSizes.fontXXXLarge,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.textPrimary,
+                    height: 1.2,
+                  ),
+                )),
                 const SizedBox(height: AppSizes.gapXSmall),
-                const Text(
-                  'Sign in to continue',
-                  style: TextStyle(
+                Obx(() => Text(
+                  controller.isOtpSent.value 
+                    ? 'OTP sent to ${controller.phoneCtrl.text}' 
+                    : 'Sign in with your phone number',
+                  style: const TextStyle(
                     fontSize: AppSizes.fontMedium,
                     color: AppColors.textSecondary,
                   ),
-                ),
+                )),
+                
                 const SizedBox(height: AppSizes.gapXXLarge),
 
-                // Email field
-                PrimaryInputField(
-                  label: AppStrings.email,
-                  hint: AppStrings.emailHint,
-                  controller: controller.emailCtrl,
-                  keyboardType: TextInputType.emailAddress,
-                  validator: controller.validateEmail,
-                  prefixIcon: const Icon(
-                    Icons.email_outlined,
-                    color: AppColors.textHint,
-                  ),
+                Obx(() => controller.isOtpSent.value 
+                  ? PrimaryInputField(
+                      label: 'OTP Code',
+                      hint: 'Enter 4-digit code',
+                      controller: controller.otpCtrl,
+                      keyboardType: TextInputType.number,
+                      validator: controller.validateOtp,
+                      prefixIcon: const Icon(Icons.lock_open_rounded, color: AppColors.gold),
+                    )
+                  : PrimaryInputField(
+                      label: AppStrings.phoneNumber,
+                      hint: AppStrings.phoneHint,
+                      controller: controller.phoneCtrl,
+                      keyboardType: TextInputType.phone,
+                      validator: controller.validatePhone,
+                      prefixIcon: const Icon(Icons.phone_android_rounded, color: AppColors.gold),
+                    )
                 ),
-                const SizedBox(height: AppSizes.gapMid),
 
-                // Password field
-                Obx(
-                  () => PrimaryInputField(
-                    label: AppStrings.password,
-                    hint: AppStrings.passwordHint,
-                    controller: controller.passwordCtrl,
-                    obscureText: !controller.isPasswordVisible.value,
-                    validator: controller.validatePassword,
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: AppColors.textHint,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        controller.isPasswordVisible.value
-                            ? Icons.visibility_outlined
-                            : Icons.visibility_off_outlined,
-                        color: AppColors.textHint,
-                      ),
-                      onPressed: controller.togglePasswordVisibility,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSizes.gapXSmall),
-
-                // Forgot password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: GestureDetector(
-                    onTap: () {}, // TODO: navigate to forgot password
-                    child: const Text(
-                      AppStrings.forgotPassword,
-                      style: TextStyle(
-                        fontSize: AppSizes.fontSmall,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: AppSizes.gapXLarge),
 
-                // Login button
-                Obx(
-                  () => PrimaryButton(
-                    text: AppStrings.signIn,
-                    isLoading: controller.isLoading.value,
-                    onPressed: controller.login,
-                  ),
-                ),
+                Obx(() => PrimaryButton(
+                  text: controller.isOtpSent.value ? 'Verify & Login' : 'Send OTP',
+                  isLoading: controller.isLoading.value,
+                  onPressed: controller.isOtpSent.value 
+                    ? controller.verifyOtp 
+                    : controller.sendOtp,
+                )),
+
                 const SizedBox(height: AppSizes.gapLarge),
 
-                // Register link
-                RichTextWidget(
-                  normalText: AppStrings.dontHaveAccount,
-                  highlightText: AppStrings.signUp,
-                  onTap: controller.goToRegister,
-                ),
+                if (!controller.isOtpSent.value)
+                  Center(
+                    child: RichTextWidget(
+                      normalText: AppStrings.dontHaveAccount,
+                      highlightText: AppStrings.signUp,
+                      onTap: controller.goToRegister,
+                    ),
+                  ),
+                
+                if (controller.isOtpSent.value)
+                  Center(
+                    child: TextButton(
+                      onPressed: () => controller.isOtpSent.value = false,
+                      child: const Text(
+                        'Change Phone Number',
+                        style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  )
               ],
             ),
           ),

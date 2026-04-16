@@ -7,40 +7,25 @@ import '../../../../routes/app_pages.dart';
 class RegistrationController extends GetxController {
   final formKey = GlobalKey<FormState>();
   final nameCtrl = TextEditingController();
+  final phoneCtrl = TextEditingController();
   final emailCtrl = TextEditingController();
-  final passwordCtrl = TextEditingController();
-  final confirmPasswordCtrl = TextEditingController();
-
-  final isPasswordVisible = false.obs;
-  final isConfirmPasswordVisible = false.obs;
+  final districtCtrl = TextEditingController();
+  
+  final gender = 'Male'.obs;
   final isLoading = false.obs;
-
-  void togglePasswordVisibility() =>
-      isPasswordVisible.value = !isPasswordVisible.value;
-  void toggleConfirmPasswordVisibility() =>
-      isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
 
   String? validateName(String? v) {
     if (v == null || v.isEmpty) return 'Full name is required';
-    if (v.length < 2) return 'Name is too short';
+    return null;
+  }
+
+  String? validatePhone(String? v) {
+    if (v == null || v.isEmpty) return 'Phone number is required';
     return null;
   }
 
   String? validateEmail(String? v) {
-    if (v == null || v.isEmpty) return 'Email is required';
-    if (!GetUtils.isEmail(v)) return 'Enter a valid email address';
-    return null;
-  }
-
-  String? validatePassword(String? v) {
-    if (v == null || v.isEmpty) return 'Password is required';
-    if (v.length < 6) return 'Password must be at least 6 characters';
-    return null;
-  }
-
-  String? validateConfirmPassword(String? v) {
-    if (v == null || v.isEmpty) return 'Please confirm your password';
-    if (v != passwordCtrl.text) return 'Passwords do not match';
+    if (v != null && v.isNotEmpty && !GetUtils.isEmail(v)) return 'Enter a valid email';
     return null;
   }
 
@@ -48,14 +33,11 @@ class RegistrationController extends GetxController {
     if (!formKey.currentState!.validate()) return;
     isLoading.value = true;
     try {
-      // TODO: replace with AuthApiServices.signUpProcessApi(body: {...})
-      await Future.delayed(const Duration(milliseconds: 800)); // Simulated
-
-      // On success:
+      await Future.delayed(const Duration(milliseconds: 800));
+      
       await LocalStorage.saveName(name: nameCtrl.text.trim());
-      await LocalStorage.saveEmail(email: emailCtrl.text.trim());
+      await LocalStorage.savePhone(phone: phoneCtrl.text.trim());
       await LocalStorage.setLoggedIn(value: true);
-      await LocalStorage.saveToken(token: 'simulated_token_here');
 
       Get.offAllNamed(Routes.bottomNav);
     } catch (e) {
@@ -70,9 +52,9 @@ class RegistrationController extends GetxController {
   @override
   void onClose() {
     nameCtrl.dispose();
+    phoneCtrl.dispose();
     emailCtrl.dispose();
-    passwordCtrl.dispose();
-    confirmPasswordCtrl.dispose();
+    districtCtrl.dispose();
     super.onClose();
   }
 }

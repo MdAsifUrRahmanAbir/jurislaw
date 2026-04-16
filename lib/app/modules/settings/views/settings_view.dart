@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
+import '../../../core/services/local_storage_service.dart';
 import '../../../widgets/primary_appbar_widget.dart';
 import '../../../widgets/toggle_switch_widget.dart';
 import '../controllers/settings_controller.dart';
@@ -31,6 +32,21 @@ class SettingsView extends GetView<SettingsController> {
                   value: controller.isDarkMode.value,
                   onChanged: controller.toggleDarkMode,
                 ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSizes.gapMid),
+
+          // Language
+          _SettingsSection(
+            title: 'change_language'.tr,
+            isDark: isDark,
+            children: [
+              _SettingsTile(
+                icon: Icons.language_rounded,
+                title: 'select_language'.tr,
+                onTap: () => _showLanguageDialog(context),
+                isDark: isDark,
               ),
             ],
           ),
@@ -138,6 +154,33 @@ class SettingsView extends GetView<SettingsController> {
         Get.back();
         controller.logout();
       },
+    );
+  }
+
+  void _showLanguageDialog(BuildContext context) {
+    Get.dialog(
+      AlertDialog(
+        title: Text('select_language'.tr),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Text('Bangla (বাংলা)'),
+              onTap: () {
+                LocalStorage.saveLanguage(name: 'Bangla', langSmall: 'bn', langCap: 'BN');
+                Get.back();
+              },
+            ),
+            ListTile(
+              title: const Text('English'),
+              onTap: () {
+                LocalStorage.saveLanguage(name: 'English', langSmall: 'en', langCap: 'EN');
+                Get.back();
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

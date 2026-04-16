@@ -4,7 +4,10 @@ import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_sizes.dart';
 import '../../../core/constants/app_strings.dart';
 import '../../home/views/home_view.dart';
+import '../../lawyer_list/views/lawyer_list_view.dart';
 import '../../profile/views/profile_view.dart';
+import '../../bookings/views/bookings_view.dart';
+import '../../../routes/app_pages.dart';
 
 import '../controllers/bottom_nav_controller.dart';
 
@@ -13,9 +16,8 @@ class BottomNavView extends GetView<BottomNavController> {
 
   static final List<Widget> _pages = [
     const HomeView(),
-    // Add more pages here: Explore, Notifications, etc.
-    const _PlaceholderPage(label: AppStrings.explore),
-    const _PlaceholderPage(label: AppStrings.notifications_),
+    const LawyerListView(),
+    const BookingsView(),
     const ProfileView(),
   ];
 
@@ -28,55 +30,47 @@ class BottomNavView extends GetView<BottomNavController> {
           index: controller.currentIndex.value,
           children: _pages,
         ),
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: isDark
-                ? AppColors.darkCardBackground
-                : AppColors.cardBackground,
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.shadow,
-                blurRadius: 12,
-                offset: const Offset(0, -2),
-              ),
-            ],
-          ),
-          child: SafeArea(
-            child: BottomNavigationBar(
-              currentIndex: controller.currentIndex.value,
-              onTap: controller.changePage,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              selectedItemColor: AppColors.primary,
-              unselectedItemColor: AppColors.grey,
-              showUnselectedLabels: true,
-              type: BottomNavigationBarType.fixed,
-              selectedFontSize: AppSizes.fontXS,
-              unselectedFontSize: AppSizes.fontXS,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home_outlined),
-                  activeIcon: Icon(Icons.home_rounded),
-                  label: AppStrings.home,
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.explore_outlined),
-                  activeIcon: Icon(Icons.explore_rounded),
-                  label: AppStrings.explore,
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.notifications_outlined),
-                  activeIcon: Icon(Icons.notifications_rounded),
-                  label: AppStrings.notifications_,
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person_outline_rounded),
-                  activeIcon: Icon(Icons.person_rounded),
-                  label: AppStrings.profile,
-                ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => Get.toNamed(Routes.intakeForm),
+          backgroundColor: AppColors.gold,
+          elevation: 4,
+          child: const Icon(Icons.add_comment_rounded, color: Colors.white, size: 30),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: BottomAppBar(
+          shape: const CircularNotchedRectangle(),
+          notchMargin: 8,
+          color: isDark ? AppColors.darkCardBackground : Colors.white,
+          child: Container(
+            height: 60,
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildNavItem(0, Icons.home_outlined, Icons.home_rounded, AppStrings.home),
+                _buildNavItem(1, Icons.gavel_outlined, Icons.gavel_rounded, 'Finder'),
+                const SizedBox(width: 40), // Gap for FAB
+                _buildNavItem(2, Icons.calendar_today_outlined, Icons.calendar_today_rounded, 'Bookings'),
+                _buildNavItem(3, Icons.person_outline_rounded, Icons.person_rounded, AppStrings.profile),
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, IconData icon, IconData activeIcon, String label) {
+    bool isActive = controller.currentIndex.value == index;
+    return Expanded(
+      child: InkWell(
+        onTap: () => controller.changePage(index),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(isActive ? activeIcon : icon, color: isActive ? AppColors.gold : Colors.grey, size: 24),
+            Text(label, style: TextStyle(color: isActive ? AppColors.gold : Colors.grey, fontSize: 10, fontWeight: isActive ? FontWeight.bold : FontWeight.normal)),
+          ],
         ),
       ),
     );
