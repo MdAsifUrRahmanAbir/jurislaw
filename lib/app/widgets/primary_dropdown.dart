@@ -10,6 +10,8 @@ class PrimaryDropdown<T> extends StatelessWidget {
   final List<DropdownMenuItem<T>> items;
   final void Function(T?)? onChanged;
   final String? Function(T?)? validator;
+  final bool isRequired;
+  final bool? isDark;
 
   const PrimaryDropdown({
     super.key,
@@ -19,21 +21,32 @@ class PrimaryDropdown<T> extends StatelessWidget {
     required this.items,
     this.onChanged,
     this.validator,
+    this.isRequired = false,
+    this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final effectiveIsDark = isDark ?? (Theme.of(context).brightness == Brightness.dark);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null) ...[
-          Text(
-            label!,
-            style: TextStyle(
-              fontSize: AppSizes.fontSmall,
-              fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.textLight : AppColors.textPrimary,
+          RichText(
+            text: TextSpan(
+              text: label!,
+              style: TextStyle(
+                fontSize: AppSizes.fontSmall,
+                fontWeight: FontWeight.w600,
+                color: effectiveIsDark ? AppColors.textLight : AppColors.textPrimary,
+              ),
+              children: [
+                if (isRequired)
+                  const TextSpan(
+                    text: ' *',
+                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+              ],
             ),
           ),
           const SizedBox(height: AppSizes.gapXSmall - 2),
@@ -43,10 +56,19 @@ class PrimaryDropdown<T> extends StatelessWidget {
           items: items,
           onChanged: onChanged,
           validator: validator,
+          dropdownColor: effectiveIsDark ? AppColors.darkCardBackground : Colors.white,
+          style: TextStyle(
+            color: effectiveIsDark ? Colors.white : AppColors.textPrimary,
+            fontSize: AppSizes.fontMedium,
+          ),
           decoration: InputDecoration(
             hintText: hint,
+            hintStyle: TextStyle(
+              fontSize: AppSizes.fontMedium,
+              color: AppColors.textHint,
+            ),
             filled: true,
-            fillColor: isDark
+            fillColor: effectiveIsDark
                 ? AppColors.darkCardBackground
                 : AppColors.greyLight,
             contentPadding: const EdgeInsets.symmetric(
@@ -60,7 +82,7 @@ class PrimaryDropdown<T> extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
               borderSide: BorderSide(
-                color: isDark ? AppColors.greyDark : AppColors.greyLight,
+                color: effectiveIsDark ? AppColors.greyDark : AppColors.greyLight,
               ),
             ),
             focusedBorder: OutlineInputBorder(

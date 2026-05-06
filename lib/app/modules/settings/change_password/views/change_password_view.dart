@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../core/constants/app_colors.dart';
-import '../../../../core/constants/app_sizes.dart';
-import '../../../../core/constants/app_strings.dart';
-import '../../../../widgets/primary_appbar_widget.dart';
-import '../../../../widgets/primary_button.dart';
-import '../../../../widgets/primary_input_field.dart';
+import 'package:my_structure/app/core/constants/app_colors.dart';
+import 'package:my_structure/app/core/constants/app_sizes.dart';
+import 'package:my_structure/app/core/constants/app_strings.dart';
+import 'package:my_structure/app/widgets/primary_appbar_widget.dart';
+import 'package:my_structure/app/widgets/primary_button.dart';
+import 'package:my_structure/app/widgets/primary_input_field.dart';
 import '../controllers/change_password_controller.dart';
 
 class ChangePasswordView extends GetView<ChangePasswordController> {
@@ -14,7 +14,7 @@ class ChangePasswordView extends GetView<ChangePasswordController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const PrimaryAppBar(title: AppStrings.changePassword),
+      appBar: PrimaryAppBar(title: AppStrings.changePassword),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppSizes.paddingMid),
         child: Form(

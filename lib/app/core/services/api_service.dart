@@ -1,3 +1,5 @@
+import 'package:my_structure/app/core/services/api_endpoint.dart';
+
 import '../utils/app_logger.dart';
 import 'api_method.dart';
 import 'app_snackbar.dart';
@@ -32,9 +34,11 @@ class ApiServices {
     bool showSuccessMessage = false,
   }) async {
     try {
-      final response = await ApiMethod(
-        isBasic: isBasic,
-      ).get(url, showResult: showResult, showErrorMessage: showErrorMessage);
+      final response = await ApiMethod(isBasic: isBasic).get(
+        "${ApiEndpoint.baeUrl}$url",
+        showResult: showResult,
+        showErrorMessage: showErrorMessage,
+      );
       if (response != null) {
         return _handleSuccess(response, fromJson, showSuccessMessage);
       }
@@ -58,7 +62,7 @@ class ApiServices {
   }) async {
     try {
       final response = await ApiMethod(isBasic: isBasic).post(
-        url,
+        "${ApiEndpoint.baeUrl}$url",
         body ?? {},
         code: statusCode,
         showResult: showResult,
@@ -87,7 +91,7 @@ class ApiServices {
   }) async {
     try {
       final response = await ApiMethod(isBasic: isBasic).multipartMultiFile(
-        url,
+        "${ApiEndpoint.baeUrl}$url",
         body,
         fieldList: fieldList,
         pathList: pathList,

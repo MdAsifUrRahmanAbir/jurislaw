@@ -23,6 +23,8 @@ class PrimaryInputField extends StatelessWidget {
   final FocusNode? focusNode;
   final bool autofocus;
   final bool enabled;
+  final bool isRequired;
+  final bool? isDark;
 
   const PrimaryInputField({
     super.key,
@@ -44,21 +46,32 @@ class PrimaryInputField extends StatelessWidget {
     this.focusNode,
     this.autofocus = false,
     this.enabled = true,
+    this.isRequired = false,
+    this.isDark,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final effectiveIsDark = isDark ?? (Theme.of(context).brightness == Brightness.dark);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (label != null) ...[
-          Text(
-            label!,
-            style: TextStyle(
-              fontSize: AppSizes.fontSmall,
-              fontWeight: FontWeight.w600,
-              color: isDark ? AppColors.textLight : AppColors.textPrimary,
+          RichText(
+            text: TextSpan(
+              text: label!,
+              style: TextStyle(
+                fontSize: AppSizes.fontSmall,
+                fontWeight: FontWeight.w600,
+                color: effectiveIsDark ? AppColors.textLight : AppColors.textPrimary,
+              ),
+              children: [
+                if (isRequired)
+                  const TextSpan(
+                    text: ' *',
+                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+              ],
             ),
           ),
           const SizedBox(height: AppSizes.gapXSmall - 2),
@@ -80,7 +93,7 @@ class PrimaryInputField extends StatelessWidget {
           enabled: enabled,
           style: TextStyle(
             fontSize: AppSizes.fontMedium,
-            color: isDark ? AppColors.textLight : AppColors.textPrimary,
+            color: effectiveIsDark ? AppColors.textLight : AppColors.textPrimary,
           ),
           decoration: InputDecoration(
             hintText: hint,
@@ -91,7 +104,7 @@ class PrimaryInputField extends StatelessWidget {
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: isDark
+            fillColor: effectiveIsDark
                 ? AppColors.darkCardBackground
                 : AppColors.greyLight,
             contentPadding: const EdgeInsets.symmetric(
@@ -105,7 +118,7 @@ class PrimaryInputField extends StatelessWidget {
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
               borderSide: BorderSide(
-                color: isDark ? AppColors.greyDark : AppColors.greyLight,
+                color: effectiveIsDark ? AppColors.greyDark : AppColors.greyLight,
               ),
             ),
             focusedBorder: OutlineInputBorder(

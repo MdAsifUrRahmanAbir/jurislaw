@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../core/services/local_storage_service.dart';
-import '../../../routes/app_pages.dart';
+import 'package:my_structure/app/core/services/local_storage_service.dart';
+import 'package:my_structure/app/routes/app_pages.dart';
 
 class OnboardController extends GetxController {
   late PageController pageController;
@@ -9,22 +9,19 @@ class OnboardController extends GetxController {
 
   final List<Map<String, String>> pages = [
     {
-      'title': 'Welcome to My App',
-      'subtitle':
-          'The best place to manage your activities simply and efficiently.',
-      'image': '🎯',
+      'title': 'onboard_1_title'.tr,
+      'subtitle': 'onboard_1_subtitle'.tr,
+      'image': '⚖️',
     },
     {
-      'title': 'Stay Organized',
-      'subtitle':
-          'Track everything in one place and never miss an important task.',
-      'image': '📋',
+      'title': 'onboard_2_title'.tr,
+      'subtitle': 'onboard_2_subtitle'.tr,
+      'image': '📅',
     },
     {
-      'title': 'Get Started Today',
-      'subtitle':
-          'Join thousands of users already simplifying their daily lives.',
-      'image': '🚀',
+      'title': 'onboard_3_title'.tr,
+      'subtitle': 'onboard_3_subtitle'.tr,
+      'image': '💳',
     },
   ];
 

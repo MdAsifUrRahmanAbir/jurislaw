@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:get/get.dart';
 
-import '../../../core/services/local_storage_service.dart';
-import '../../../routes/app_pages.dart';
+import 'package:my_structure/app/core/services/local_storage_service.dart';
+import 'package:my_structure/app/routes/app_pages.dart';
 
 /// Matches Remitium's SplashController pattern exactly:
 ///  - onReady() (fires after widget is mounted)

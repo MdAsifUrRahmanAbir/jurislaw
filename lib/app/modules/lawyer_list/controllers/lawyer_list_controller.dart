@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import '../../../data/models/lawyer_model.dart';
+import 'package:my_structure/app/data/models/lawyer_model.dart';
 import '../../home/controllers/home_controller.dart';
 
 class LawyerListController extends GetxController {
@@ -7,14 +7,14 @@ class LawyerListController extends GetxController {
   final filteredLawyers = <Lawyer>[].obs;
 
   // Filter States
-  final selectedArea = 'All'.obs;
-  final selectedLocation = 'All'.obs;
+  final selectedArea = 'সব'.obs;
+  final selectedLocation = 'সব'.obs;
   final minExperience = 0.obs;
   final minRating = 0.0.obs;
   final maxFee = 10000.0.obs;
 
-  final areas = ['All', 'Family', 'Criminal', 'Land', 'Divorce', 'Business', 'Tax', 'Labour', 'Writ'];
-  final locations = ['All', 'Dhaka', 'Chittagong', 'Sylhet', 'Rajshahi'];
+  final areas = ['সব', 'পারিবারিক', 'ফৌজদারি', 'ভূমি', 'ডিভোর্স', 'ব্যবসায়িক', 'ট্যাক্স', 'শ্রম আইন', 'রিট'];
+  final locations = ['সব', 'ঢাকা', 'চট্টগ্রাম', 'সিলেট', 'রাজশাহী'];
 
   @override
   void onInit() {

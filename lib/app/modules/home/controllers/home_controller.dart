@@ -1,13 +1,13 @@
 import 'package:get/get.dart';
-import '../../../core/services/local_storage_service.dart';
-import '../../../data/models/lawyer_model.dart';
+import 'package:my_structure/app/core/services/local_storage_service.dart';
+import 'package:my_structure/app/data/models/lawyer_model.dart';
 
 class HomeController extends GetxController {
   final userName = ''.obs;
   
   final lawyers = <Lawyer>[].obs;
-  final categories = ['Family', 'Criminal', 'Private', 'Divorce', 'Land', 'Tax'].obs;
-  final selectedCategory = 'Family'.obs;
+  final categories = ['পারিবারিক', 'ফৌজদারি', 'ব্যক্তিগত', 'ডিভোর্স', 'ভূমি', 'ট্যাক্স'].obs;
+  final selectedCategory = 'পারিবারিক'.obs;
 
   @override
   void onInit() {
@@ -19,50 +19,50 @@ class HomeController extends GetxController {
   void _loadUser() {
     userName.value = LocalStorage.getName().isNotEmpty
         ? LocalStorage.getName()
-        : 'User';
+        : 'ব্যবহারকারী';
   }
 
   void _loadDummyLawyers() {
     lawyers.assignAll([
       Lawyer(
         id: '1',
-        name: 'Adv. Jhon Smith',
+        name: 'অ্যাডভোকেট জন স্মিথ',
         photo: 'https://i.pravatar.cc/150?u=1',
-        specialty: 'Family Law Specialist',
+        specialty: 'পারিবারিক আইন বিশেষজ্ঞ',
         experience: 10,
-        location: 'Dhanmondi, Dhaka',
+        location: 'ধানমন্ডি, ঢাকা',
         rating: 4.8,
         reviewsCount: 125,
         fee: 2000.0,
-        practiceAreas: ['Family', 'Divorce', 'Land', 'Alimony', 'Child Custody', 'Succession'],
-        bio: 'Senior Advocate with over 10 years of experience in the Bangladesh Supreme Court. Specializes in handling complex family disputes and land litigation with a high success rate.',
-        education: 'LL.B (Honours), LL.M, University of Dhaka',
+        practiceAreas: ['পারিবারিক', 'ডিভোর্স', 'ভূমি', 'খোরপোশ', 'সন্তানের অভিভাবকত্ব', 'উত্তরাধিকার'],
+        bio: 'বাংলাদেশ সুপ্রিম কোর্টে ১০ বছরেরও বেশি অভিজ্ঞতাসম্পন্ন সিনিয়র আইনজীবী। পারিবারিক বিরোধ এবং ভূমি সংক্রান্ত মামলা সফলতার সাথে পরিচালনার জন্য পরিচিত।',
+        education: 'এলএলবি (অনার্স), এলএলএম, ঢাকা বিশ্ববিদ্যালয়',
         barEnrollment: 'BC/2013/1234',
-        languages: ['Bangla', 'English'],
-        successRate: '92%',
+        languages: ['বাংলা', 'ইংরেজি'],
+        successRate: '৯২%',
         reviews: [
-          {'name': 'Rahim Uddin', 'rating': 5.0, 'comment': 'Excellent service, very professional.', 'date': '2 days ago'},
-          {'name': 'Karim Ahmed', 'rating': 4.5, 'comment': 'Highly recommended for land issues.', 'date': '1 week ago'},
+          {'name': 'রহিম উদ্দিন', 'rating': 5.0, 'comment': 'দারুণ সার্ভিস, খুব প্রফেশনাল।', 'date': '২ দিন আগে'},
+          {'name': 'করিম আহমেদ', 'rating': 4.5, 'comment': 'ভূমি সংক্রান্ত সমস্যার জন্য দারুণ পরামর্শক।', 'date': '১ সপ্তাহ আগে'},
         ],
       ),
       Lawyer(
         id: '2',
-        name: 'Adv. Laura Lim',
+        name: 'অ্যাডভোকেট লরা লিম',
         photo: 'https://i.pravatar.cc/150?u=2',
-        specialty: 'Criminal Law Expert',
+        specialty: 'ফৌজদারি আইন বিশেষজ্ঞ',
         experience: 12,
-        location: 'Agrabad, Chittagong',
+        location: 'আগ্রাবাদ, চট্টগ্রাম',
         rating: 4.9,
         reviewsCount: 85,
         fee: 2500.0,
-        practiceAreas: ['Criminal', 'Labour', 'Business', 'Writ', 'Cyber Law'],
-        bio: 'Specializing in criminal defense and labour law disputes. Dedicated to protecting client rights with integrity and strategic litigation.',
-        education: 'LL.B, University of London; LL.M, Chittagong University',
+        practiceAreas: ['ফৌজদারি', 'শ্রম আইন', 'ব্যবসায়িক', 'রিট', 'সাইবার আইন'],
+        bio: 'ফৌজডারি প্রতিরক্ষা এবং শ্রম আইন সংক্রান্ত বিরোধে বিশেষজ্ঞ। সততা এবং কৌশলগত আইনি লড়াইয়ের মাধ্যমে মক্কেলের অধিকার রক্ষায় নিবেদিত।',
+        education: 'এলএলবি, লন্ডন বিশ্ববিদ্যালয়; এলএলএম, চট্টগ্রাম বিশ্ববিদ্যালয়',
         barEnrollment: 'BC/2011/5678',
-        languages: ['Bangla', 'English', 'Hindi'],
-        successRate: '88%',
+        languages: ['বাংলা', 'ইংরেজি', 'হিন্দি'],
+        successRate: '৮৮%',
         reviews: [
-          {'name': 'Asif Khan', 'rating': 5.0, 'comment': 'Best criminal lawyer in Chittagong.', 'date': '3 days ago'},
+          {'name': 'আসিফ খান', 'rating': 5.0, 'comment': 'চট্টগ্রামের অন্যতম সেরা ফৌজদারি আইনজীবী।', 'date': '৩ দিন আগে'},
         ],
       ),
     ]);

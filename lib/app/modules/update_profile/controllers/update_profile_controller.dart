@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../core/services/local_storage_service.dart';
-import '../../../core/services/app_snackbar.dart';
+import 'package:my_structure/app/core/services/local_storage_service.dart';
+import 'package:my_structure/app/core/services/app_snackbar.dart';
 
 class UpdateProfileController extends GetxController {
   final formKey = GlobalKey<FormState>();

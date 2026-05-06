@@ -9,6 +9,7 @@ import '../utils/app_logger.dart';
 import '../../../app/routes/app_pages.dart';
 import 'local_storage_service.dart';
 import 'app_snackbar.dart';
+import '../model/common_error_model.dart';
 
 final _log = appLogger(ApiMethod);
 
@@ -58,13 +59,15 @@ class ApiMethod {
       return _handleResponse(res, code, showErrorMessage);
     } on SocketException {
       _log.e('SocketException on GET $url');
-      if (showErrorMessage)
+      if (showErrorMessage) {
         AppSnackBar.error('Check your internet connection and try again.');
+      }
       return null;
     } on TimeoutException {
       _log.e('TimeoutException on GET $url');
-      if (showErrorMessage)
+      if (showErrorMessage) {
         AppSnackBar.error('Request timed out. Please try again.');
+      }
       return null;
     } catch (e) {
       _log.e('Unknown error on GET $url: $e');
@@ -95,13 +98,15 @@ class ApiMethod {
       return _handleResponse(res, code, showErrorMessage);
     } on SocketException {
       _log.e('SocketException on POST $url');
-      if (showErrorMessage)
+      if (showErrorMessage) {
         AppSnackBar.error('Check your internet connection and try again.');
+      }
       return null;
     } on TimeoutException {
       _log.e('TimeoutException on POST $url');
-      if (showErrorMessage)
+      if (showErrorMessage) {
         AppSnackBar.error('Request timed out. Please try again.');
+      }
       return null;
     } catch (e) {
       _log.e('Unknown error on POST $url: $e');
@@ -130,8 +135,9 @@ class ApiMethod {
       return _handleResponse(res, code, showErrorMessage);
     } on SocketException {
       _log.e('SocketException on MULTIPART $url');
-      if (showErrorMessage)
+      if (showErrorMessage) {
         AppSnackBar.error('Check your internet connection and try again.');
+      }
       return null;
     } catch (e) {
       _log.e('Unknown error on MULTIPART $url: $e');
@@ -164,8 +170,9 @@ class ApiMethod {
       return _handleResponse(res, code, showErrorMessage);
     } on SocketException {
       _log.e('SocketException on MULTIPART-MULTI $url');
-      if (showErrorMessage)
+      if (showErrorMessage) {
         AppSnackBar.error('Check your internet connection and try again.');
+      }
       return null;
     } catch (e) {
       _log.e('Unknown error on MULTIPART-MULTI $url: $e');
@@ -185,27 +192,36 @@ class ApiMethod {
       Get.offAllNamed(Routes.login);
       return null;
     }
-    // Server error
-    if (res.statusCode == 500) {
-      if (showErrorMessage)
-        AppSnackBar.error('Internal server error. Please try again later.');
-      return null;
-    }
-    if (res.statusCode == expectedCode) {
+
+    // Success (200 or 201)
+    if (res.statusCode == 200 || res.statusCode == 201) {
       return jsonDecode(res.body) as Map<String, dynamic>;
     }
-    // Other errors — show backend message if available
+
+    // Server error
+    if (res.statusCode == 500) {
+      if (showErrorMessage) {
+        AppSnackBar.error('Internal server error. Please try again later.');
+      }
+      return null;
+    }
+
+    // Other errors — show backend message if available using CommonErrorModel
     _log.e('🐞 Unexpected status ${res.statusCode}: ${res.body}');
     if (showErrorMessage) {
       try {
         final decoded = jsonDecode(res.body) as Map<String, dynamic>;
-        final msg =
-            decoded['message']?['error']?.join(' ') ??
-            decoded['message']?.toString() ??
-            'Something went wrong.';
-        AppSnackBar.error(msg);
-      } catch (_) {
-        AppSnackBar.error('Something went wrong.');
+        final errorModel = CommonErrorModel.fromJson(decoded);
+        AppSnackBar.error(errorModel.message);
+      } catch (e) {
+        // Fallback for simple message or array
+        try {
+          final decoded = jsonDecode(res.body) as Map<String, dynamic>;
+          final msg = decoded['message']?.toString() ?? 'Something went wrong.';
+          AppSnackBar.error(msg);
+        } catch (_) {
+          AppSnackBar.error('Something went wrong.');
+        }
       }
     }
     return null;

@@ -1,84 +1,83 @@
+import 'package:get/get.dart';
+
 /// Centralized app strings — update here and it reflects everywhere.
 class AppStrings {
   AppStrings._();
 
   // App
-  static const String appName = 'Jurisheba';
-  static const String appTagline = 'Your Legal Partner';
+  static String get appName => 'app_name'.tr;
+  static String get appTagline => 'app_tagline'.tr;
 
   // Splash
-  static const String loading = 'Loading Jurisheba...';
+  static String get loading => 'loading'.tr;
 
   // Onboard
-  static const String skip = 'Skip';
-  static const String next = 'Next';
-  static const String getStarted = 'Get Started';
-  static const String onboard1Title = 'Legal Help at Hand';
-  static const String onboard1Subtitle =
-      'Connect with top lawyers across Bangladesh instantly.';
-  static const String onboard2Title = 'Book Consultations';
-  static const String onboard2Subtitle =
-      'Schedule video, audio or chat sessions with ease.';
-  static const String onboard3Title = 'Secure Payments';
-  static const String onboard3Subtitle =
-      'Pay via bKash, Nagad, or Cards securely.';
+  static String get skip => 'skip'.tr;
+  static String get next => 'next'.tr;
+  static String get getStarted => 'get_started'.tr;
+  static String get onboard1Title => 'onboard_1_title'.tr;
+  static String get onboard1Subtitle => 'onboard_1_subtitle'.tr;
+  static String get onboard2Title => 'onboard_2_title'.tr;
+  static String get onboard2Subtitle => 'onboard_2_subtitle'.tr;
+  static String get onboard3Title => 'onboard_3_title'.tr;
+  static String get onboard3Subtitle => 'onboard_3_subtitle'.tr;
 
   // Auth
-  static const String login = 'Login';
-  static const String register = 'Register';
-  static const String signUp = 'Sign Up';
-  static const String signIn = 'Sign In';
-  static const String logout = 'Logout';
-  static const String email = 'Email';
-  static const String password = 'Password';
-  static const String confirmPassword = 'Confirm Password';
-  static const String fullName = 'Full Name';
-  static const String phoneNumber = 'Phone Number';
-  static const String forgotPassword = 'Forgot Password?';
-  static const String dontHaveAccount = "Don't have an account? ";
-  static const String alreadyHaveAccount = 'Already have an account? ';
-  static const String emailHint = 'Enter your email';
-  static const String passwordHint = 'Enter your password';
-  static const String confirmPasswordHint = 'Re-enter your password';
-  static const String fullNameHint = 'Enter your full name';
-  static const String phoneHint = 'Enter your phone number';
+  static String get login => 'login'.tr;
+  static String get register => 'register'.tr;
+  static String get signUp => 'sign_up'.tr;
+  static String get signIn => 'sign_in'.tr;
+  static String get logout => 'logout'.tr;
+  static String get email => 'email'.tr;
+  static String get password => 'password'.tr;
+  static String get confirmPassword => 'confirm_password'.tr;
+  static String get fullName => 'full_name'.tr;
+  static String get phoneNumber => 'phone_number'.tr;
+  static String get forgotPassword => 'forgot_password'.tr;
+  static String get dontHaveAccount => 'dont_have_account'.tr;
+  static String get alreadyHaveAccount => 'already_have_account'.tr;
+  static String get emailHint => 'email_hint'.tr;
+  static String get passwordHint => 'password_hint'.tr;
+  static String get confirmPasswordHint => 'confirm_password_hint'.tr;
+  static String get fullNameHint => 'full_name_hint'.tr;
+  static String get phoneHint => 'phone_hint'.tr;
 
   // Validation
-  static const String required = 'This field is required';
-  static const String invalidEmail = 'Enter a valid email address';
-  static const String weakPassword = 'Password must be at least 6 characters';
-  static const String passwordMismatch = 'Passwords do not match';
+  static String get required => 'required'.tr;
+  static String get invalidEmail => 'invalid_email'.tr;
+  static String get weakPassword => 'weak_password'.tr;
+  static String get passwordMismatch => 'password_mismatch'.tr;
 
   // Profile
-  static const String profile = 'Profile';
-  static const String editProfile = 'Edit Profile';
-  static const String saveChanges = 'Save Changes';
-  static const String bio = 'Bio';
-  static const String bioHint = 'Tell us about yourself';
-  static const String location = 'Location';
-  static const String locationHint = 'Enter your city';
+  static String get profile => 'profile'.tr;
+  static String get editProfile => 'edit_profile'.tr;
+  static String get saveChanges => 'save_changes'.tr;
+  static String get bio => 'bio'.tr;
+  static String get bioHint => 'bio_hint'.tr;
+  static String get location => 'location'.tr;
+  static String get locationHint => 'location_hint'.tr;
 
   // Settings
-  static const String settings = 'Settings';
-  static const String appearance = 'Appearance';
-  static const String darkMode = 'Dark Mode';
-  static const String language = 'Language';
-  static const String notifications = 'Notifications';
-  static const String privacy = 'Privacy';
-  static const String changePassword = 'Change Password';
-  static const String twoFaSecurity = '2FA Security';
-  static const String aboutApp = 'About App';
-  static const String version = 'Version';
-  static const String helpSupport = 'Help & Support';
-  static const String logoutConfirm = 'Are you sure you want to logout?';
-  static const String cancel = 'Cancel';
-  static const String confirm = 'Confirm';
-  static const String yes = 'Yes';
-  static const String no = 'No';
+  static String get settings => 'settings'.tr;
+  static String get appearance => 'appearance'.tr;
+  static String get darkMode => 'dark_mode'.tr;
+  static String get language => 'language'.tr;
+  static String get notifications => 'notifications'.tr;
+  static String get privacy => 'privacy'.tr;
+  static String get changePassword => 'change_password'.tr;
+  static String get twoFaSecurity => 'two_fa_security'.tr;
+  static String get aboutApp => 'about_app'.tr;
+  static String get version => 'version'.tr;
+  static String get helpSupport => 'help_support'.tr;
+  static String get logoutConfirm => 'logout_confirm'.tr;
+  static String get cancel => 'cancel'.tr;
+  static String get confirm => 'confirm'.tr;
+  static String get yes => 'yes'.tr;
+  static String get no => 'no'.tr;
 
   // Navigation
-  static const String home = 'Home';
-  static const String lawyer = 'Lawyer';
-  static const String search = 'Search';
-  static const String more = 'More';
+  static String get home => 'home'.tr;
+  static String get lawyer => 'lawyer'.tr;
+  static String get search => 'search'.tr;
+  static String get more => 'more'.tr;
 }
