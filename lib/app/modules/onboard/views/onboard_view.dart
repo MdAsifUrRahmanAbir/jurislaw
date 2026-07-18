@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:my_structure/app/core/constants/app_colors.dart';
 import 'package:my_structure/app/core/constants/app_sizes.dart';
-import 'package:my_structure/app/core/constants/app_strings.dart';
-import 'package:my_structure/app/widgets/primary_button.dart';
 import '../controllers/onboard_controller.dart';
 import '../widgets/onboard_page.dart';
 

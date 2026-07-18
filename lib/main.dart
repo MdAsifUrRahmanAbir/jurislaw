@@ -9,6 +9,7 @@ import 'app/core/theme/app_theme.dart';
 import 'app/routes/app_pages.dart';
 import 'app/core/localization/translations.dart';
 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -45,6 +46,7 @@ class MyApp extends StatelessWidget {
       translations: AppTranslations(),
       locale: const Locale('bn'), 
       fallbackLocale: const Locale('en'),
+
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
