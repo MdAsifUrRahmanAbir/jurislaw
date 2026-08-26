@@ -5,14 +5,16 @@ import 'otp_verification_mobile_view.dart';
 import 'otp_verification_tab_view.dart';
 
 class OtpVerificationScreen extends ConsumerWidget {
-  const OtpVerificationScreen({super.key});
+  final String phone;
+
+  const OtpVerificationScreen({super.key, required this.phone});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Responsive(
-        mobile: const OtpVerificationMobileView(),
-        tablet: const OtpVerificationTabView(),
+        mobile: OtpVerificationMobileView(phone: phone),
+        tablet: OtpVerificationTabView(phone: phone),
       ),
     );
   }

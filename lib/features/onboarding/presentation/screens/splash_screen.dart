@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/localization/locale_controller.dart';
 import '../../../../core/session/auth_session_controller.dart';
 import '../../../../core/session/auth_session_state.dart';
+import '../../../../core/storage/app_flags.dart';
+import '../../../../core/storage/local_cache_service.dart';
 import '../../../../core/utils/responsive.dart';
 import '../../../../routes/route_names.dart';
 import '../widgets/splash_logo.dart';
@@ -31,12 +34,24 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     if (!mounted) return;
 
     final status = ref.read(authSessionControllerProvider).status;
+    if (status == AuthStatus.authenticated) {
+      context.go(RouteNames.mainShell);
+      return;
+    }
 
-    context.go(
-      status == AuthStatus.authenticated
-          ? RouteNames.mainShell
-          : RouteNames.onboarding,
-    );
+    final hasChosenLocale = ref.read(localeControllerProvider.notifier).hasChosenLocale();
+    if (!hasChosenLocale) {
+      context.go(RouteNames.languageSelection);
+      return;
+    }
+
+    final onboardingDone = AppFlags.isOnboardingDone(ref.read(localCacheServiceProvider));
+    if (!onboardingDone) {
+      context.go(RouteNames.onboarding);
+      return;
+    }
+
+    context.go(RouteNames.login);
   }
 
   @override

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_sizes.dart';
+import '../../../../core/session/auth_session_controller.dart';
+import '../../../../core/widgets/utility/custom_alert_dialog.dart';
 import '../../../../routes/route_names.dart';
 import '../widgets/profile_header.dart';
-import '../widgets/profile_stats_row.dart';
 import '../widgets/profile_settings_sections.dart';
 
 /// Same content as [ProfileMobileView], centered in a fixed-width
@@ -12,8 +13,24 @@ import '../widgets/profile_settings_sections.dart';
 class ProfileTabView extends ConsumerWidget {
   const ProfileTabView({super.key});
 
+  Future<void> _logout(BuildContext context, WidgetRef ref) async {
+    final confirmed = await CustomAlertDialog.confirm(
+      context,
+      title: 'Log Out',
+      message: 'Are you sure you want to log out?',
+      confirmText: 'Log Out',
+      destructive: true,
+    );
+    if (confirmed != true) return;
+    await ref.read(authSessionControllerProvider.notifier).logout();
+    if (!context.mounted) return;
+    context.go(RouteNames.login);
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(authSessionControllerProvider).user;
+
     return SingleChildScrollView(
       child: Center(
         child: ConstrainedBox(
@@ -22,17 +39,19 @@ class ProfileTabView extends ConsumerWidget {
             padding: const EdgeInsets.fromLTRB(AppSizes.xl, 0, AppSizes.xl, AppSizes.xl),
             child: Column(
               children: [
-                const ProfileHeader(
-                  name: 'Alex Johnson',
-                  role: 'Workspace Admin',
+                ProfileHeader(
+                  name: user?.name.isNotEmpty == true ? user!.name : 'Your Profile',
+                  phone: user?.phone ?? '',
+                  avatarUrl: user?.profilePhoto,
+                  onAvatarEditTap: () => context.push(RouteNames.editProfile),
                 ),
-                const SizedBox(height: AppSizes.xl),
-                const ProfileStatsRow(projects: '24', tasks: '156', rating: '4.8'),
                 const SizedBox(height: AppSizes.xl),
                 ProfileSettingsSections(
                   onPersonalInfoTap: () => context.go(RouteNames.editProfile),
                   onSettingsTap: () => context.push(RouteNames.settings),
-                  // onNotificationSettingsTap: () => context.go(RouteNames.notifications),
+                  onPrivacyTap: () => context.push(RouteNames.termsPrivacy),
+                  onHelpCenterTap: () => context.push(RouteNames.helpSupport),
+                  onLogoutTap: () => _logout(context, ref),
                 ),
               ],
             ),

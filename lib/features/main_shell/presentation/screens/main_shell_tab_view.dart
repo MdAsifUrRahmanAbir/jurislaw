@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/localization/gen/app_localizations.dart';
 import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../routes/route_names.dart';
 import '../controllers/main_shell_controller.dart';
 import '../widgets/shell_tab_body.dart';
 import '../widgets/shell_navigation_item.dart';
@@ -15,8 +18,14 @@ class MainShellTabView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = ref.watch(mainShellControllerProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => context.push(RouteNames.intakeForm),
+        backgroundColor: AppColors.primary,
+        child: const Icon(Icons.add_comment_rounded, color: AppColors.textWhite),
+      ),
       body: Row(
         children: [
           NavigationRail(
@@ -30,7 +39,7 @@ class MainShellTabView extends ConsumerWidget {
             selectedLabelTextStyle: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w600),
             unselectedLabelTextStyle: TextStyle(color: context.appColors.textSecondary),
             destinations: [
-              for (final item in shellNavItems)
+              for (final item in shellNavItemsFor(l10n))
                 NavigationRailDestination(
                   icon: Icon(item.icon),
                   selectedIcon: Icon(item.selectedIcon),

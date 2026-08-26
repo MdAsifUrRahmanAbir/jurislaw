@@ -1,0 +1,86 @@
+{
+  "@@locale": "en",
+
+  "appName": "Ukil Chaai",
+
+  "next": "Next",
+  "skip": "Skip",
+  "back": "Back",
+  "getStarted": "Get Started",
+  "continueLabel": "Continue",
+  "cancel": "Cancel",
+  "retry": "Retry",
+  "save": "Save",
+  "logOut": "Log Out",
+
+  "selectLanguageTitle": "Select Language / ভাষা নির্বাচন করুন",
+  "selectLanguageSubtitle": "Choose your preferred language to continue",
+  "languageBangla": "Bangla (বাংলা)",
+  "languageBanglaSubtitle": "চালিয়ে যেতে বাংলা ভাষা ব্যবহার করুন",
+  "languageEnglish": "English",
+  "languageEnglishSubtitle": "Continue with English language",
+
+  "onboard1Title": "Legal Help at Hand",
+  "onboard1Subtitle": "Connect with top lawyers across Bangladesh instantly.",
+  "onboard2Title": "Book Consultations",
+  "onboard2Subtitle": "Schedule video, audio or chat sessions with ease.",
+  "onboard3Title": "Secure Payments",
+  "onboard3Subtitle": "Pay via bKash, Nagad, or Cards securely.",
+
+  "signIn": "Sign In",
+  "signInPhoneSubtitle": "Sign in with your phone number",
+  "phoneNumber": "Phone Number",
+  "phoneNumberHint": "01XXXXXXXXX",
+  "phoneRequired": "Phone number is required",
+  "phoneInvalid": "Enter a valid phone number",
+  "sendOtp": "Send OTP",
+  "dontHaveAccount": "New here? Verifying your number creates your account automatically.",
+
+  "otpTitle": "Verify Your Number",
+  "otpSubtitle": "Enter the 6-digit code sent to {phone}",
+  "@otpSubtitle": {
+    "placeholders": { "phone": { "type": "String" } }
+  },
+  "otpCode": "OTP Code",
+  "otpHint": "Enter 6-digit code",
+  "otpRequired": "OTP is required",
+  "otpInvalid": "Enter the 6-digit code",
+  "verifyAndLogin": "Verify & Login",
+  "resendOtpIn": "Resend OTP in {seconds}s",
+  "@resendOtpIn": {
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "resendOtp": "Resend OTP",
+  "changePhoneNumber": "Change Phone Number",
+
+  "completeProfileTitle": "Complete Your Profile",
+  "completeProfileSubtitle": "Just a few more details to get started",
+  "fullName": "Full Name",
+  "fullNameHint": "e.g. John Doe",
+  "fullNameRequired": "Full name is required",
+  "emailAddress": "Email Address",
+  "emailHint": "e.g. john@example.com",
+  "emailRequired": "Email is required",
+  "emailInvalid": "Enter a valid email",
+  "addressInformation": "ADDRESS INFORMATION",
+  "division": "Division",
+  "selectDivision": "Select Division",
+  "district": "District",
+  "selectDistrict": "Select District",
+  "upazila": "Upazila / Thana",
+  "selectUpazila": "Select Upazila / Thana",
+  "villageMohalla": "Village / Mohalla",
+  "villageMohallaHint": "e.g. Dhanmondi 32",
+  "fieldRequired": "{field} is required",
+  "@fieldRequired": {
+    "placeholders": { "field": { "type": "String" } }
+  },
+  "changePhoto": "Change Photo",
+  "completeProfile": "Complete Profile",
+  "selectProfilePicture": "Please select a profile picture",
+
+  "navHome": "Home",
+  "navLawyers": "Lawyers",
+  "navBookings": "Bookings",
+  "navProfile": "Profile"
+}

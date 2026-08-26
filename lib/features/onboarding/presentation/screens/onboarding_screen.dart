@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_sizes.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/localization/gen/app_localizations.dart';
+import '../../../../core/storage/app_flags.dart';
+import '../../../../core/storage/local_cache_service.dart';
 import '../../../../core/widgets/common/custom_step_indicator.dart';
 import '../../../../core/widgets/common/primary_button.dart';
 import '../../../../routes/route_names.dart';
@@ -44,11 +46,15 @@ class _OnboardingMobileViewState extends ConsumerState<OnboardingMobileView> {
     super.dispose();
   }
 
-  void _finish() => context.go(RouteNames.welcome);
+  Future<void> _finish() async {
+    await AppFlags.setOnboardingDone(ref.read(localCacheServiceProvider));
+    if (!mounted) return;
+    context.go(RouteNames.login);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final slides = ref.watch(onboardingControllerProvider);
+    final slides = ref.read(onboardingControllerProvider.notifier).slidesFor(context);
     final isLastSlide = _currentIndex == slides.length - 1;
 
     return SafeArea(
@@ -87,7 +93,7 @@ class _OnboardingMobileViewState extends ConsumerState<OnboardingMobileView> {
           Padding(
             padding: const EdgeInsets.all(AppSizes.lg),
             child: PrimaryButton(
-              label: isLastSlide ? AppStrings.getStarted : AppStrings.next,
+              label: isLastSlide ? AppLocalizations.of(context)!.getStarted : AppLocalizations.of(context)!.next,
               onPressed: () {
                 if (isLastSlide) {
                   _finish();
@@ -126,11 +132,15 @@ class _OnboardingTabViewState extends ConsumerState<OnboardingTabView> {
     super.dispose();
   }
 
-  void _finish() => context.go(RouteNames.welcome);
+  Future<void> _finish() async {
+    await AppFlags.setOnboardingDone(ref.read(localCacheServiceProvider));
+    if (!mounted) return;
+    context.go(RouteNames.login);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final slides = ref.watch(onboardingControllerProvider);
+    final slides = ref.read(onboardingControllerProvider.notifier).slidesFor(context);
     final isLastSlide = _currentIndex == slides.length - 1;
 
     return SafeArea(
@@ -165,7 +175,7 @@ class _OnboardingTabViewState extends ConsumerState<OnboardingTabView> {
               Padding(
                 padding: const EdgeInsets.all(AppSizes.xl),
                 child: PrimaryButton(
-                  label: isLastSlide ? AppStrings.getStarted : AppStrings.next,
+                  label: isLastSlide ? AppLocalizations.of(context)!.getStarted : AppLocalizations.of(context)!.next,
                   onPressed: () {
                     if (isLastSlide) {
                       _finish();

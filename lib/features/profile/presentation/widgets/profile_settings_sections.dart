@@ -1,32 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:template_test/features/profile/presentation/widgets/settings_tile.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/localization/gen/app_localizations.dart';
 import '../../../../core/widgets/common/settings_group.dart';
+import '../../../../core/widgets/common/settings_tile.dart';
 
-/// All three grouped settings lists (Account, Preferences,
-/// Security & Support) shown on the profile screen. Taps are
+/// Grouped navigation rows shown on the profile screen. Taps are
 /// reported up via the individual callbacks so navigation stays in
 /// the caller's hands.
 class ProfileSettingsSections extends StatelessWidget {
   final VoidCallback? onPersonalInfoTap;
-  // final VoidCallback? onNotificationSettingsTap;
-  // final VoidCallback? onLanguageTap;
-  final VoidCallback? onPrivacyTap;
-  final VoidCallback? onConnectedAppsTap;
-  final VoidCallback? onTwoFactorAuthTap;
-  final VoidCallback? onHelpCenterTap;
   final VoidCallback? onSettingsTap;
+  final VoidCallback? onPrivacyTap;
+  final VoidCallback? onHelpCenterTap;
+  final VoidCallback? onLogoutTap;
 
   const ProfileSettingsSections({
     super.key,
     this.onPersonalInfoTap,
-    // this.onNotificationSettingsTap,
-    // this.onLanguageTap,
-    this.onPrivacyTap,
-    this.onConnectedAppsTap,
-    this.onTwoFactorAuthTap,
-    this.onHelpCenterTap,
     this.onSettingsTap,
+    this.onPrivacyTap,
+    this.onHelpCenterTap,
+    this.onLogoutTap,
   });
 
   @override
@@ -35,67 +28,47 @@ class ProfileSettingsSections extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SettingsGroup(
-          label: AppStrings.accountSection,
+          label: 'ACCOUNT',
           children: [
             SettingsTile(
               icon: Icons.person_outline_rounded,
-              title: AppStrings.personalInfoTitle,
-              subtitle: AppStrings.personalInfoSubtitle,
+              title: 'Personal Info',
+              subtitle: 'Name, email and address',
               onTap: onPersonalInfoTap,
             ),
-            // SettingsTile(
-            //   icon: Icons.notifications_outlined,
-            //   title: AppStrings.notificationSettingsTitle,
-            //   subtitle: AppStrings.notificationSettingsSubtitle,
-            //   onTap: onNotificationSettingsTap,
-            // ),
-            // SettingsTile(
-            //   icon: Icons.language_rounded,
-            //   title: AppStrings.languageTitle,
-            //   subtitle: 'English (US) • UTC -05:00',
-            //   onTap: onLanguageTap,
-            // ),
             SettingsTile(
               icon: Icons.settings_outlined,
-              title: AppStrings.settingsTitle,
-              subtitle: AppStrings.settingsSubtitle,
+              title: 'Settings',
+              subtitle: 'App preferences, language and security',
               onTap: onSettingsTap,
             ),
           ],
         ),
         const SizedBox(height: 24),
         SettingsGroup(
-          label: AppStrings.preferencesSection,
+          label: 'SUPPORT',
           children: [
             SettingsTile(
               icon: Icons.shield_outlined,
-              title: AppStrings.privacyTitle,
-              subtitle: AppStrings.privacySubtitle,
+              title: 'Terms & Privacy',
               onTap: onPrivacyTap,
             ),
             SettingsTile(
-              icon: Icons.terminal_rounded,
-              title: AppStrings.connectedAppsTitle,
-              subtitle: 'Slack, GitHub, AWS Gateway, Jira',
-              onTap: onConnectedAppsTap,
+              icon: Icons.info_outline_rounded,
+              title: 'Help Center',
+              onTap: onHelpCenterTap,
             ),
           ],
         ),
         const SizedBox(height: 24),
         SettingsGroup(
-          label: AppStrings.securitySupportSection,
+          label: 'ACCOUNT ACTIONS',
           children: [
             SettingsTile(
-              icon: Icons.lock_outline_rounded,
-              title: AppStrings.twoFactorAuthTitle,
-              subtitle: 'Enabled • Authenticator App',
-              onTap: onTwoFactorAuthTap,
-            ),
-            SettingsTile(
-              icon: Icons.info_outline_rounded,
-              title: AppStrings.helpCenterTitle,
-              subtitle: AppStrings.helpCenterSubtitle,
-              onTap: onHelpCenterTap,
+              icon: Icons.logout_rounded,
+              title: AppLocalizations.of(context)!.logOut,
+              trailing: SettingsTileTrailing.none,
+              onTap: onLogoutTap,
             ),
           ],
         ),

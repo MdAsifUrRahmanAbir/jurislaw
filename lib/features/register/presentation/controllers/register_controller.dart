@@ -1,24 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
-import '../../../../core/constants/app_strings.dart';
-import '../../../../core/widgets/common/password_strength_meter.dart';
+import '../../../../core/localization/gen/app_localizations.dart';
+import '../../../../core/session/auth_session_controller.dart';
+import '../../../../core/utils/error_mapper.dart';
 import '../../data/repositories/register_repository.dart';
+import '../states/register_state.dart';
 
-class RegisterFormState {
-  final bool agreedToTerms;
-
-  const RegisterFormState({
-    this.agreedToTerms = false,
-  });
-
-  RegisterFormState copyWith({
-    bool? agreedToTerms,
-  }) {
-    return RegisterFormState(
-      agreedToTerms: agreedToTerms ?? this.agreedToTerms,
-    );
-  }
+/// Dummy data for the address dropdowns, ported as-is from ukil-chaai —
+/// the real backend has no address-lookup API yet (see migration notes).
+class RegisterAddressData {
+  RegisterAddressData._();
+  static const divisions = ['Dhaka', 'Chattogram', 'Rajshahi', 'Khulna', 'Barishal', 'Sylhet', 'Rangpur', 'Mymensingh'];
+  static const districts = ['Dhaka', 'Gazipur', 'Narayanganj', 'Tangail', 'Faridpur'];
+  static const upazilas = ['Savar', 'Dhamrai', 'Kaliakair', 'Sreepur'];
 }
 
 class RegisterController extends Notifier<RegisterFormState> {
@@ -26,125 +22,87 @@ class RegisterController extends Notifier<RegisterFormState> {
 
   late final TextEditingController nameController;
   late final TextEditingController emailController;
-  late final TextEditingController passwordController;
-  late final TextEditingController confirmPasswordController;
+  late final TextEditingController villageController;
+  final _picker = ImagePicker();
 
   @override
   RegisterFormState build() {
-    nameController = TextEditingController();
-    emailController = TextEditingController();
-    passwordController = TextEditingController();
-    confirmPasswordController = TextEditingController();
+    final cachedUser = ref.read(authSessionControllerProvider).user;
+    nameController = TextEditingController(text: cachedUser?.name ?? '');
+    emailController = TextEditingController(text: cachedUser?.email ?? '');
+    villageController = TextEditingController();
 
     ref.onDispose(() {
       nameController.dispose();
       emailController.dispose();
-      passwordController.dispose();
-      confirmPasswordController.dispose();
+      villageController.dispose();
     });
 
     return const RegisterFormState();
   }
 
-  void setAgreedToTerms(bool value) {
-    state = state.copyWith(
-      agreedToTerms: value,
-    );
+  void setDivision(String? value) => state = state.copyWith(division: value);
+  void setDistrict(String? value) => state = state.copyWith(district: value);
+  void setUpazila(String? value) => state = state.copyWith(upazila: value);
+
+  Future<void> pickImage(ImageSource source) async {
+    final file = await _picker.pickImage(source: source, imageQuality: 50);
+    if (file != null) state = state.copyWith(imagePath: file.path);
   }
 
-  PasswordStrength passwordStrength() {
-    final password = passwordController.text;
+  String? validateName(String? value, AppLocalizations l10n) =>
+      (value == null || value.trim().isEmpty) ? l10n.fullNameRequired : null;
 
-    var score = 0;
-
-    if (password.length >= 8) score++;
-    if (RegExp(r'[A-Z]').hasMatch(password)) score++;
-    if (RegExp(r'[0-9]').hasMatch(password)) score++;
-    if (RegExp(r'[!@#\$&*~%^()_\-+=]').hasMatch(password)) score++;
-
-    return switch (score) {
-      0 || 1 => PasswordStrength.weak,
-      2 => PasswordStrength.fair,
-      3 => PasswordStrength.good,
-      _ => PasswordStrength.strong,
-    };
-  }
-
-  String? validateName(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return AppStrings.fullNameRequired;
-    }
-
+  String? validateEmail(String? value, AppLocalizations l10n) {
+    if (value == null || value.trim().isEmpty) return l10n.emailRequired;
+    if (!value.contains('@')) return l10n.emailInvalid;
     return null;
   }
 
-  String? validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return AppStrings.emailRequired;
-    }
+  String? validateDivision(String? value, AppLocalizations l10n) =>
+      value == null ? l10n.fieldRequired(l10n.division) : null;
 
-    if (!value.contains('@')) {
-      return AppStrings.emailInvalid;
-    }
-
-    return null;
-  }
-
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppStrings.passwordRequired;
-    }
-
-    return null;
-  }
-
-  String? validateConfirmPassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppStrings.confirmPasswordRequired;
-    }
-
-    if (value != passwordController.text) {
-      return AppStrings.passwordsDoNotMatch;
-    }
-
-    return null;
-  }
-
-  bool validateForm() {
-    return formKey.currentState?.validate() ?? false;
-  }
-
-  bool canRegister() {
-    return state.agreedToTerms;
-  }
-
+  String? validateDistrict(String? value, AppLocalizations l10n) =>
+      value == null ? l10n.fieldRequired(l10n.district) : null;
 
   RegisterRepository get _repository => ref.read(registerRepositoryProvider);
 
-  void submit(
-      void Function(
-          String fullName,
-          String email,
-          String password,
-          ) onRegister,
-      ) {
-    if (!validateForm()) {
-      return;
+  Future<bool> submit(AppLocalizations l10n) async {
+    if (!(formKey.currentState?.validate() ?? false)) return false;
+    if (state.imagePath == null) {
+      state = state.copyWith(errorMessage: l10n.selectProfilePicture);
+      return false;
     }
 
-    if (!state.agreedToTerms) {
-      return;
-    }
+    state = state.copyWith(isSubmitting: true, errorMessage: null);
+    try {
+      final name = nameController.text.trim();
+      final email = emailController.text.trim();
 
-    onRegister(
-      nameController.text.trim(),
-      emailController.text.trim(),
-      passwordController.text,
-    );
+      await _repository.completeProfile(
+        name: name,
+        email: email,
+        division: state.division!,
+        district: state.district!,
+        upazila: state.upazila ?? '',
+        village: villageController.text.trim(),
+        imagePath: state.imagePath!,
+      );
+
+      final session = ref.read(authSessionControllerProvider.notifier);
+      final currentUser = ref.read(authSessionControllerProvider).user;
+      if (currentUser != null) {
+        await session.updateUser(currentUser.copyWith(name: name, email: email, isProfileComplete: true));
+      }
+
+      state = state.copyWith(isSubmitting: false);
+      return true;
+    } catch (e) {
+      state = state.copyWith(isSubmitting: false, errorMessage: getErrorMessage(e));
+      return false;
+    }
   }
 }
 
 final registerControllerProvider =
-NotifierProvider.autoDispose<RegisterController, RegisterFormState>(
-  RegisterController.new,
-);
+    NotifierProvider.autoDispose<RegisterController, RegisterFormState>(RegisterController.new);

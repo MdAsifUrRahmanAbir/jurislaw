@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_sizes.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/localization/gen/app_localizations.dart';
 import '../../../../core/theme/app_color_scheme.dart';
 import '../../../../core/widgets/common/otp_input_field.dart';
 import '../../../../core/widgets/common/primary_button.dart';
@@ -17,7 +17,9 @@ import '../../../../core/widgets/common/link_button.dart';
 /// [onVerify] / [onResend].
 class OtpForm extends StatefulWidget {
   final bool loading;
+  final bool resending;
   final int resendSeconds;
+  final int otpLength;
   final ValueChanged<String> onVerify;
   final VoidCallback? onResend;
 
@@ -26,7 +28,9 @@ class OtpForm extends StatefulWidget {
     required this.onVerify,
     this.onResend,
     this.loading = false,
-    this.resendSeconds = 59,
+    this.resending = false,
+    this.resendSeconds = 60,
+    this.otpLength = 6,
   });
 
   @override
@@ -62,12 +66,6 @@ class _OtpFormState extends State<OtpForm> {
     });
   }
 
-  String get _formattedTime {
-    final minutes = (_secondsLeft ~/ 60).toString().padLeft(2, '0');
-    final seconds = (_secondsLeft % 60).toString().padLeft(2, '0');
-    return '$minutes:$seconds';
-  }
-
   void _handleResend() {
     if (_secondsLeft > 0) return;
     widget.onResend?.call();
@@ -77,49 +75,33 @@ class _OtpFormState extends State<OtpForm> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final canResend = _secondsLeft <= 0;
 
     return Column(
       children: [
         OtpInputField(
-          length: 6,
+          length: widget.otpLength,
           onChanged: (value) => setState(() => _code = value),
         ),
         const SizedBox(height: AppSizes.lg),
         if (!canResend)
-          RichText(
-            text: TextSpan(
-              style: TextStyle(fontSize: AppSizes.fontMd, color: context.appColors.textSecondary),
-              children: [
-                const TextSpan(text: AppStrings.resendOtpInPrefix),
-                TextSpan(
-                  text: _formattedTime,
-                  style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.w700),
-                ),
-              ],
-            ),
+          Text(
+            l10n.resendOtpIn(_secondsLeft),
+            style: TextStyle(fontSize: AppSizes.fontMd, color: context.appColors.textSecondary),
           ),
         const SizedBox(height: AppSizes.xl),
         PrimaryButton(
-          label: AppStrings.verifyAndProceed,
+          label: l10n.verifyAndLogin,
           loading: widget.loading,
-          onPressed: _code.length == 6 ? () => widget.onVerify(_code) : null,
+          onPressed: _code.length == widget.otpLength ? () => widget.onVerify(_code) : null,
         ),
         const SizedBox(height: AppSizes.lg),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-             Text(
-              AppStrings.didntReceiveCode,
-              style: TextStyle(fontSize: AppSizes.fontSm, color: context.appColors.textSecondary),
-            ),
-            LinkButton(
-              label: AppStrings.resendOtp,
-              fontSize: AppSizes.fontSm,
-              color: canResend ? AppColors.primary : context.appColors.textHint,
-              onPressed: canResend ? _handleResend : null,
-            ),
-          ],
+        LinkButton(
+          label: widget.resending ? '${l10n.resendOtp}…' : l10n.resendOtp,
+          fontSize: AppSizes.fontSm,
+          color: canResend ? AppColors.primary : context.appColors.textHint,
+          onPressed: canResend && !widget.resending ? _handleResend : null,
         ),
       ],
     );

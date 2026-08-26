@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/constants/app_strings.dart';
+import '../../../../core/localization/locale_controller.dart';
 import '../../../../core/session/auth_session_controller.dart';
 import '../../../../core/theme/theme_controller.dart';
 import '../../../../core/widgets/common/app_header_bar.dart';
@@ -117,17 +118,15 @@ class SettingsMobileView extends ConsumerWidget {
                   biometricAuth: state.biometricAuth,
                   onBiometricAuthChanged: controller.setBiometricAuth,
 
-                  onTwoFactorAuthTap: () {
-                    // TODO: navigate to 2FA setup
-                  },
+                  languageValue: ref.watch(localeControllerProvider).languageCode == 'bn' ? 'বাংলা' : 'English',
+
+                  onTwoFactorAuthTap: () => context.push(RouteNames.twofaSecurity),
 
                   onActiveSessionsTap: () {
                     // TODO: navigate to active sessions
                   },
 
-                  onLanguageTap: () {
-                    // TODO: open language picker
-                  },
+                  onLanguageTap: () => context.push(RouteNames.languageSelection),
 
                   onRegionTap: () {
                     // TODO: open region picker

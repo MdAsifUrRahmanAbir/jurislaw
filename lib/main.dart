@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:template_test/core/theme/app_theme.dart';
 import 'package:template_test/routes/app_router.dart';
 
+import 'core/localization/gen/app_localizations.dart';
+import 'core/localization/locale_controller.dart';
 import 'core/network/connectivity_banner.dart';
 import 'core/observers/riverpod_logging_observer.dart';
 import 'core/storage/local_cache_service.dart';
@@ -37,13 +39,17 @@ class PosApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeControllerProvider);
+    final locale = ref.watch(localeControllerProvider);
 
     return MaterialApp.router(
-      title: 'POS System',
+      title: 'Ukil Chaai',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
+      locale: locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       routerConfig: router,
       builder: (context, child) {
         return Stack(

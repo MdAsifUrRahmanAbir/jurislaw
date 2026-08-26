@@ -1,101 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/localization/gen/app_localizations.dart';
+import '../../../../core/utils/error_mapper.dart';
 import '../../data/repositories/login_repository.dart';
+import '../states/login_state.dart';
 
-class LoginFormState {
-  final bool rememberMe;
-
-  const LoginFormState({
-    this.rememberMe = false,
-  });
-
-  LoginFormState copyWith({
-    bool? rememberMe,
-  }) {
-    return LoginFormState(
-      rememberMe: rememberMe ?? this.rememberMe,
-    );
-  }
-}
-
-
-/*
-final editProfileControllerProvider = NotifierProvider.autoDispose<EditProfileController, EditProfileState>(
-  EditProfileController.new,
-);
- */
-
-class LoginController extends Notifier<LoginFormState> {
+class LoginController extends Notifier<LoginState> {
   final formKey = GlobalKey<FormState>();
-
-  late final TextEditingController emailController;
-  late final TextEditingController passwordController;
+  late final TextEditingController phoneController;
 
   @override
-  LoginFormState build() {
-    emailController = TextEditingController(text: "user@test.com");
-    passwordController = TextEditingController(text: "12345678");
-
-    ref.onDispose(() {
-      emailController.dispose();
-      passwordController.dispose();
-    });
-
-    return const LoginFormState();
-  }
-
-  void setRememberMe(bool value) {
-    state = state.copyWith(
-      rememberMe: value,
-    );
-  }
-
-  String? validateEmail(String? value) {
-    if (value == null || value.trim().isEmpty) {
-      return AppStrings.emailRequired;
-    }
-
-    if (!value.contains('@')) {
-      return AppStrings.emailInvalid;
-    }
-
-    return null;
-  }
-
-  String? validatePassword(String? value) {
-    if (value == null || value.isEmpty) {
-      return AppStrings.passwordRequired;
-    }
-
-    return null;
+  LoginState build() {
+    phoneController = TextEditingController();
+    ref.onDispose(() => phoneController.dispose());
+    return const LoginState();
   }
 
   LoginRepository get _repository => ref.read(loginRepositoryProvider);
 
-  bool submit(
-      void Function(
-          String email,
-          String password,
-          bool rememberMe,
-          ) onSignIn,
-      ) {
-    if (!(formKey.currentState?.validate() ?? false)) {
-      return false;
+  String? validatePhone(String? value, AppLocalizations l10n) {
+    if (value == null || value.trim().isEmpty) return l10n.phoneRequired;
+    if (value.trim().length < 10) return l10n.phoneInvalid;
+    return null;
+  }
+
+  /// Validates the form, requests an OTP, and returns the phone number on
+  /// success (so the caller can navigate to OTP verification with it) or
+  /// null on validation/API failure — check [state.errorMessage] for why.
+  Future<String?> sendOtp() async {
+    if (!(formKey.currentState?.validate() ?? false)) return null;
+
+    state = state.copyWith(isSubmitting: true, errorMessage: null);
+    final phone = phoneController.text.trim();
+    try {
+      await _repository.requestOtp(phone);
+      state = state.copyWith(isSubmitting: false);
+      return phone;
+    } catch (e) {
+      state = state.copyWith(isSubmitting: false, errorMessage: getErrorMessage(e));
+      return null;
     }
-
-    onSignIn(
-      emailController.text.trim(),
-      passwordController.text,
-      state.rememberMe,
-    );
-
-    return true;
   }
 }
 
-final loginFormControllerProvider =
-NotifierProvider.autoDispose<LoginController, LoginFormState>(
-  LoginController.new,
-);
+final loginControllerProvider = NotifierProvider.autoDispose<LoginController, LoginState>(LoginController.new);

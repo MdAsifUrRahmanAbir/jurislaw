@@ -1,13 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../constants/api_endpoints.dart';
+import '../session/auth_session_controller.dart';
 import 'api_exception.dart';
 import 'api_logging_interceptor.dart';
 import 'connectivity_provider.dart';
 
 final apiClientProvider = Provider<ApiClient>((ref) {
   final connectivityService = ref.watch(connectivityServiceProvider);
-  return ApiClient(isConnected: () => connectivityService.isConnected);
+  return ApiClient(
+    isConnected: () => connectivityService.isConnected,
+    onUnauthorized: () => ref.read(authSessionControllerProvider.notifier).logout(),
+  );
 });
 
 class ApiClient {
@@ -19,8 +23,11 @@ class ApiClient {
   /// tools) without wiring up connectivity — real app usage always goes
   /// through [apiClientProvider], which injects the real check.
   final bool Function() _isConnected;
+  final void Function()? _onUnauthorized;
 
-  ApiClient({bool Function()? isConnected}) : _isConnected = isConnected ?? (() => true) {
+  ApiClient({bool Function()? isConnected, void Function()? onUnauthorized})
+      : _isConnected = isConnected ?? (() => true),
+        _onUnauthorized = onUnauthorized {
     _dio = Dio(
       BaseOptions(
         baseUrl: ApiEndpoints.baseUrl,
@@ -63,6 +70,19 @@ class ApiClient {
         return handler.next(options);
       },
       onError: (DioException e, handler) {
+        handler.next(e);
+      },
+    ));
+
+    // Only a token that WE attached can have gone stale/invalid server-side —
+    // a 401 on a request with no Authorization header (e.g. request_otp)
+    // just means the OTP/credentials were wrong, not that the session expired.
+    _dio.interceptors.add(InterceptorsWrapper(
+      onError: (DioException e, handler) {
+        final hadAuthHeader = e.requestOptions.headers['Authorization'] != null;
+        if (e.response?.statusCode == 401 && hadAuthHeader) {
+          _onUnauthorized?.call();
+        }
         handler.next(e);
       },
     ));

@@ -1,32 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/app_sizes.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/localization/gen/app_localizations.dart';
 import '../../../../core/widgets/common/primary_input_field.dart';
-import '../../../../core/widgets/common/password_input_field.dart';
-import '../../../../core/widgets/common/primary_checkbox.dart';
-import '../../../../core/widgets/common/link_button.dart';
 import '../../../../core/widgets/common/primary_button.dart';
+import '../../../../core/widgets/utility/custom_snackbar.dart';
 import '../controllers/login_controller.dart';
 
-/// Email + password fields, "Remember me" / "Forgot password?" row, and
-/// the Sign In button.
+/// Phone-number field + "Send OTP" button. On success, hands the caller
+/// the verified phone number so it can navigate to OTP verification.
 class LoginForm extends ConsumerWidget {
-  final bool loading;
-  final void Function(String email, String password, bool rememberMe) onSignIn;
-  final VoidCallback? onForgotPassword;
+  final void Function(String phone) onOtpSent;
 
-  const LoginForm({
-    super.key,
-    required this.onSignIn,
-    this.onForgotPassword,
-    this.loading = false,
-  });
+  const LoginForm({super.key, required this.onOtpSent});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final controller = ref.watch(loginFormControllerProvider.notifier);
-    final state = ref.watch(loginFormControllerProvider);
+    final controller = ref.watch(loginControllerProvider.notifier);
+    final state = ref.watch(loginControllerProvider);
+    final l10n = AppLocalizations.of(context)!;
+
+    ref.listen(loginControllerProvider, (previous, next) {
+      if (next.errorMessage != null && next.errorMessage != previous?.errorMessage) {
+        CustomSnackbar.show(context, next.errorMessage!, error: true);
+      }
+    });
 
     return Form(
       key: controller.formKey,
@@ -34,42 +32,21 @@ class LoginForm extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           PrimaryInputField(
-            label: AppStrings.emailAddress,
-            hint: AppStrings.emailHint,
-            controller: controller.emailController,
-            keyboardType: TextInputType.emailAddress,
-            prefixIcon: Icon(Icons.mail_outline_rounded),
-            validator: controller.validateEmail,
+            label: l10n.phoneNumber,
+            hint: l10n.phoneNumberHint,
+            controller: controller.phoneController,
+            keyboardType: TextInputType.phone,
+            prefixIcon: const Icon(Icons.phone_android_rounded),
+            validator: (value) => controller.validatePhone(value, l10n),
           ),
-          const SizedBox(height: AppSizes.md),
-          PasswordInputField(
-            label: AppStrings.password,
-            hint: AppStrings.passwordHint,
-            controller: controller.passwordController,
-            validator: controller.validatePassword,
-          ),
-          const SizedBox(height: AppSizes.xs),
-          Row(
-            children: [
-              Expanded(
-                child: PrimaryCheckbox(
-                  value: state.rememberMe,
-                  label: AppStrings.rememberMe,
-                  onChanged: (value) => controller.setRememberMe(value ?? false),
-                ),
-              ),
-              LinkButton(
-                label: AppStrings.forgotPassword,
-                fontSize: AppSizes.fontSm,
-                onPressed: onForgotPassword,
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSizes.sm),
+          const SizedBox(height: AppSizes.lg),
           PrimaryButton(
-            label: AppStrings.signIn,
-            loading: loading,
-            onPressed: () => controller.submit(onSignIn),
+            label: l10n.sendOtp,
+            loading: state.isSubmitting,
+            onPressed: () async {
+              final phone = await controller.sendOtp();
+              if (phone != null) onOtpSent(phone);
+            },
           ),
         ],
       ),

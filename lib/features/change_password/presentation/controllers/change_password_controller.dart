@@ -3,23 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/common/password_strength_meter.dart';
-
-class ChangePasswordState {
-  final PasswordStrength passwordStrength;
-
-  const ChangePasswordState({
-    this.passwordStrength = PasswordStrength.weak,
-  });
-
-  ChangePasswordState copyWith({
-    PasswordStrength? passwordStrength,
-  }) {
-    return ChangePasswordState(
-      passwordStrength:
-      passwordStrength ?? this.passwordStrength,
-    );
-  }
-}
+import '../states/change_password_state.dart';
 
 class ChangePasswordController
     extends Notifier<ChangePasswordState> {

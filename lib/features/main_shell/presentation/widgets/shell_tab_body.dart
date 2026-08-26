@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import '../../../analytics_mode/presentation/screens/analytics_mode_screen.dart';
+import '../../../bookings/presentation/screens/bookings_screen.dart';
 import '../../../home/presentation/screens/home_screen.dart';
-import '../../../activity/presentation/screens/activity_screen.dart';
-import '../../../order_list/presentation/screens/order_list_screen.dart';
+import '../../../lawyer_list/presentation/screens/lawyer_list_screen.dart';
 import '../../../profile/presentation/screens/profile_screen.dart';
 
-/// Hosts all five bottom-nav destination screens in an [IndexedStack]
+/// Hosts all four bottom-nav destination screens in an [IndexedStack]
 /// so switching tabs preserves each screen's scroll position and
 /// state instead of rebuilding it from scratch every time.
 class ShellTabBody extends StatelessWidget {
@@ -15,9 +14,8 @@ class ShellTabBody extends StatelessWidget {
 
   static const _screens = [
     HomeScreen(),
-    ActivityScreen(),
-    AnalyticsModeScreen(),
-    OrderListScreen(),
+    LawyerListScreen(),
+    BookingsScreen(),
     ProfileScreen(),
   ];
 

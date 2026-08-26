@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/localization/gen/app_localizations.dart';
 
 /// Icon + label data for one bottom-nav tab. Kept as plain data (not
 /// a widget) so the destination list can be built once and reused by
@@ -17,10 +18,12 @@ class ShellNavItemData {
   });
 }
 
-const List<ShellNavItemData> shellNavItems = [
-  ShellNavItemData(icon: Icons.home_outlined, selectedIcon: Icons.home_rounded, label: 'Home'),
-  ShellNavItemData(icon: Icons.access_time_rounded, selectedIcon: Icons.access_time_filled_rounded, label: 'Activity'),
-  ShellNavItemData(icon: Icons.bar_chart_outlined, selectedIcon: Icons.bar_chart_rounded, label: 'Analytics'),
-  ShellNavItemData(icon: Icons.shopping_bag_outlined, selectedIcon: Icons.shopping_bag_rounded, label: 'Orders'),
-  ShellNavItemData(icon: Icons.person_outline_rounded, selectedIcon: Icons.person_rounded, label: 'Profile'),
-];
+/// Home / Lawyers / Bookings / Profile — the center "New Consultation"
+/// action lives as a separate FAB on [MainShellMobileView], not a tab
+/// (matching ukil-chaai's bottom_nav, which routes its FAB to intake_form).
+List<ShellNavItemData> shellNavItemsFor(AppLocalizations l10n) => [
+      ShellNavItemData(icon: Icons.home_outlined, selectedIcon: Icons.home_rounded, label: l10n.navHome),
+      ShellNavItemData(icon: Icons.gavel_outlined, selectedIcon: Icons.gavel_rounded, label: l10n.navLawyers),
+      ShellNavItemData(icon: Icons.event_note_outlined, selectedIcon: Icons.event_note_rounded, label: l10n.navBookings),
+      ShellNavItemData(icon: Icons.person_outline_rounded, selectedIcon: Icons.person_rounded, label: l10n.navProfile),
+    ];

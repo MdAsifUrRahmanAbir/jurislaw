@@ -1,0 +1,86 @@
+{
+  "@@locale": "bn",
+
+  "appName": "উকিল চাই",
+
+  "next": "পরবর্তী",
+  "skip": "এড়িয়ে যান",
+  "back": "পিছনে",
+  "getStarted": "শুরু করুন",
+  "continueLabel": "চালিয়ে যান",
+  "cancel": "বাতিল",
+  "retry": "আবার চেষ্টা করুন",
+  "save": "সংরক্ষণ করুন",
+  "logOut": "লগ আউট",
+
+  "selectLanguageTitle": "Select Language / ভাষা নির্বাচন করুন",
+  "selectLanguageSubtitle": "এগিয়ে যেতে আপনার পছন্দের ভাষা বেছে নিন",
+  "languageBangla": "Bangla (বাংলা)",
+  "languageBanglaSubtitle": "প্রাথমিক ভাষা হিসেবে সেট করা আছে",
+  "languageEnglish": "English",
+  "languageEnglishSubtitle": "ইংরেজি ভাষায় চালিয়ে যান",
+
+  "onboard1Title": "আইনি সহায়তা এখন হাতের নাগালে",
+  "onboard1Subtitle": "সারা বাংলাদেশের সেরা আইনজীবীদের সাথে তাৎক্ষণিক যোগাযোগ করুন।",
+  "onboard2Title": "পরামর্শের জন্য বুক করুন",
+  "onboard2Subtitle": "ভিডিও, অডিও বা চ্যাট সেশন সহজেই নির্ধারণ করুন।",
+  "onboard3Title": "নিরাপদ পেমেন্ট",
+  "onboard3Subtitle": "বিকাশ, নগদ বা কার্ডের মাধ্যমে নিরাপদে পেমেন্ট করুন।",
+
+  "signIn": "সাইন ইন",
+  "signInPhoneSubtitle": "আপনার ফোন নম্বর দিয়ে সাইন ইন করুন",
+  "phoneNumber": "ফোন নম্বর",
+  "phoneNumberHint": "০১XXXXXXXXX",
+  "phoneRequired": "ফোন নম্বর আবশ্যক",
+  "phoneInvalid": "সঠিক ফোন নম্বর দিন",
+  "sendOtp": "ওটিপি পাঠান",
+  "dontHaveAccount": "নতুন এখানে? আপনার নম্বর যাচাই করলেই স্বয়ংক্রিয়ভাবে অ্যাকাউন্ট তৈরি হবে।",
+
+  "otpTitle": "আপনার নম্বর যাচাই করুন",
+  "otpSubtitle": "{phone} নম্বরে পাঠানো ৬-সংখ্যার কোডটি লিখুন",
+  "@otpSubtitle": {
+    "placeholders": { "phone": { "type": "String" } }
+  },
+  "otpCode": "ওটিপি কোড",
+  "otpHint": "৬-সংখ্যার কোডটি লিখুন",
+  "otpRequired": "ওটিপি আবশ্যক",
+  "otpInvalid": "৬-সংখ্যার কোডটি লিখুন",
+  "verifyAndLogin": "যাচাই করুন এবং লগইন করুন",
+  "resendOtpIn": "{seconds} সেকেন্ড পর আবার পাঠান",
+  "@resendOtpIn": {
+    "placeholders": { "seconds": { "type": "int" } }
+  },
+  "resendOtp": "ওটিপি আবার পাঠান",
+  "changePhoneNumber": "ফোন নম্বর পরিবর্তন করুন",
+
+  "completeProfileTitle": "আপনার প্রোফাইল সম্পূর্ণ করুন",
+  "completeProfileSubtitle": "শুরু করতে আর কয়েকটি তথ্য দিন",
+  "fullName": "পুরো নাম",
+  "fullNameHint": "যেমন: জন ডো",
+  "fullNameRequired": "পুরো নাম আবশ্যক",
+  "emailAddress": "ইমেইল ঠিকানা",
+  "emailHint": "যেমন: john@example.com",
+  "emailRequired": "ইমেইল আবশ্যক",
+  "emailInvalid": "সঠিক ইমেইল দিন",
+  "addressInformation": "ঠিকানার তথ্য",
+  "division": "বিভাগ",
+  "selectDivision": "বিভাগ নির্বাচন করুন",
+  "district": "জেলা",
+  "selectDistrict": "জেলা নির্বাচন করুন",
+  "upazila": "উপজেলা / থানা",
+  "selectUpazila": "উপজেলা / থানা নির্বাচন করুন",
+  "villageMohalla": "গ্রাম / মহল্লা",
+  "villageMohallaHint": "যেমন: ধানমন্ডি ৩২",
+  "fieldRequired": "{field} আবশ্যক",
+  "@fieldRequired": {
+    "placeholders": { "field": { "type": "String" } }
+  },
+  "changePhoto": "ছবি পরিবর্তন করুন",
+  "completeProfile": "প্রোফাইল সম্পূর্ণ করুন",
+  "selectProfilePicture": "একটি প্রোফাইল ছবি নির্বাচন করুন",
+
+  "navHome": "হোম",
+  "navLawyers": "আইনজীবী",
+  "navBookings": "বুকিং",
+  "navProfile": "প্রোফাইল"
+}

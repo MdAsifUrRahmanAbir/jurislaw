@@ -48,13 +48,12 @@ class _NoInternetActions {
 
   void workOffline() {
     ref.read(offlineModeProvider.notifier).enable();
-    // TODO: once cached/local data exists for the shell, point this at
     final status = ref.read(authSessionControllerProvider).status;
 
     context.go(
       status == AuthStatus.authenticated
           ? RouteNames.mainShell
-          : RouteNames.welcome,
+          : RouteNames.login,
     );
   }
 }

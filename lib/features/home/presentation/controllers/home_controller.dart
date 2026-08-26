@@ -1,10 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../data/repositories/lawyer_repository.dart';
 
-class HomeController extends Notifier<AsyncValue<void>> {
+/// Just the selected category chip — the lawyer list itself lives in
+/// [lawyersProvider] (shared with lawyer_list/lawyer_details).
+class HomeController extends Notifier<String> {
   @override
-  AsyncValue<void> build() {
-    return const AsyncValue.data(null);
-  }
+  String build() => lawyerCategories.first;
+
+  void selectCategory(String category) => state = category;
 }
 
-final homeControllerProvider = NotifierProvider<HomeController, AsyncValue<void>>(HomeController.new);
+final homeControllerProvider = NotifierProvider<HomeController, String>(HomeController.new);

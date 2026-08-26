@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_sizes.dart';
-import '../../../../core/constants/app_strings.dart';
+import '../../../../core/localization/gen/app_localizations.dart';
 import '../../../../core/widgets/common/avatar_photo_picker.dart';
 
 /// Centered avatar + "Change Profile Photo" link at the top of the
@@ -25,7 +25,7 @@ class EditProfilePhotoSection extends StatelessWidget {
         child: AvatarPhotoPicker(
           imageUrl: avatarUrl,
           label: name,
-          actionLabel: AppStrings.changeProfilePhoto,
+          actionLabel: AppLocalizations.of(context)!.changePhoto,
           onTap: onChangePhoto,
         ),
       ),
