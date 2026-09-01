@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:template_test/core/constants/app_colors.dart';
-import 'package:template_test/core/constants/app_sizes.dart';
-import 'package:template_test/core/widgets/common/icon_button.dart';
+import 'package:ukil_chaai/core/constants/app_colors.dart';
+import 'package:ukil_chaai/core/constants/app_sizes.dart';
+import 'package:ukil_chaai/core/widgets/common/icon_button.dart';
 
 import '../../theme/app_color_scheme.dart';
 

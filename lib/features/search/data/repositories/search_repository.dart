@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_test/core/network/api_client.dart';
+import 'package:ukil_chaai/core/network/api_client.dart';
 
 final searchRepositoryProvider = Provider<SearchRepository>((ref) {
   return SearchRepository(ref.watch(apiClientProvider));

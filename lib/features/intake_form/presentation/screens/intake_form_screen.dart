@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_test/core/utils/responsive.dart';
+import 'package:ukil_chaai/core/utils/responsive.dart';
 import 'intake_form_mobile_view.dart';
 import 'intake_form_tab_view.dart';
 

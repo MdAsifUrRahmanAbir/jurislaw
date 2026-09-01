@@ -1,4 +1,4 @@
-name: template_test
+name: ukil_chaai
 description: "A new Flutter project."
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
@@ -28,12 +28,20 @@ dependencies:
   table_calendar: ^3.2.1
 
   skeletonizer:
+  change_app_package_name: ^1.5.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+  flutter_launcher_icons:
+  rename_app: ^1.6.6
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/launcher/ukil-chaai.png"
+  min_sdk_android: 21
 
 flutter:
 

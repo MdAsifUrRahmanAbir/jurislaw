@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:template_test/core/theme/app_theme.dart';
-import 'package:template_test/routes/app_router.dart';
+import 'package:ukil_chaai/core/theme/app_theme.dart';
+import 'package:ukil_chaai/routes/app_router.dart';
 
 import 'core/localization/gen/app_localizations.dart';
 import 'core/localization/locale_controller.dart';

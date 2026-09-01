@@ -6,6 +6,6 @@
 class AssetsRes {
   AssetsRes._();
 
-  static const String PROJECT_NAME = 'template_test';
+  static const String PROJECT_NAME = 'ukil_chaai';
   static const String PROJECT_VERSION = '1.0.0+1';
 }
