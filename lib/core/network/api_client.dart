@@ -10,7 +10,8 @@ final apiClientProvider = Provider<ApiClient>((ref) {
   final connectivityService = ref.watch(connectivityServiceProvider);
   return ApiClient(
     isConnected: () => connectivityService.isConnected,
-    onUnauthorized: () => ref.read(authSessionControllerProvider.notifier).logout(),
+    // The token is already dead server-side — don't try to revoke it.
+    onUnauthorized: () => ref.read(authSessionControllerProvider.notifier).logout(revokeRemotely: false),
   );
 });
 

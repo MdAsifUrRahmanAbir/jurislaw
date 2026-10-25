@@ -1,103 +1,108 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/widgets/common/app_header_bar.dart';
 import '../../../../core/widgets/common/custom_filter_bar.dart';
-import '../../../../core/widgets/utility/info_tip_banner.dart';
+import '../../../../core/widgets/utility/custom_snackbar.dart';
+import '../../../../core/widgets/utility/empty_state.dart';
+import '../../../../core/widgets/utility/paged_list_view.dart';
+import '../../../../core/utils/error_mapper.dart';
+import '../../../../routes/route_names.dart';
+import '../../data/models/notification_model.dart';
 import '../controllers/notification_controller.dart';
 import '../widgets/notification_tile.dart';
 
+/// Notifications (A8). Tapping one marks it read and opens what it is
+/// about — routing on type / booking id, not the web `url`.
 class NotificationsMobileView extends ConsumerWidget {
-  const NotificationsMobileView({super.key});
+  final double maxWidth;
 
-  // TODO: replace with notificationControllerProvider's fetched data once
-  // features/notifications/data/repositories is implemented.
-  static const _items = [
-    NotificationTile(
-      category: NotificationCategory.alert,
-      title: 'Multiple SSH Failures Detected',
-      description: 'Unauthorized terminal access attempts detected on cluster Node 2.',
-      time: '2m ago',
-      isUnread: true,
-    ),
-    NotificationTile(
-      category: NotificationCategory.order,
-      title: 'Enterprise Invoice Paid',
-      description: 'ACME Corp completed payment for Invoice #8125 (\$4,500.00).',
-      time: '1h ago',
-      isUnread: true,
-    ),
-    NotificationTile(
-      category: NotificationCategory.system,
-      title: 'Database cluster state synchronized',
-      description: 'Secure master replicated metadata sync completed.',
-      time: '3h ago',
-    ),
-    NotificationTile(
-      category: NotificationCategory.alert,
-      title: 'Node 12 Latency Spike',
-      description: 'System latency is above 240ms in region US-East.',
-      time: '5h ago',
-    ),
-    NotificationTile(
-      category: NotificationCategory.system,
-      title: 'Subscription renewed successfully',
-      description: 'Next payment scheduled for March 2026.',
-      time: '1d ago',
-    ),
-    NotificationTile(
-      category: NotificationCategory.order,
-      title: 'New Enterprise Plan upgrade',
-      description: "Workspace 'Apex Global' upgraded to high-performance tier.",
-      time: '2d ago',
-    ),
-  ];
+  const NotificationsMobileView({super.key, this.maxWidth = double.infinity});
+
+  void _open(BuildContext context, WidgetRef ref, NotificationModel notification) {
+    ref.read(notificationControllerProvider.notifier).markRead(notification);
+    final type = notification.type.toLowerCase();
+    if (notification.bookingId != null) {
+      final isSession = type.contains('session') || type.contains('message') || type.contains('join');
+      context.push(isSession ? RouteNames.sessionRoomPath(notification.bookingId!) : RouteNames.bookingDetailsPath(notification.bookingId!));
+    } else if (type.contains('payment') || type.contains('refund')) {
+      context.push(RouteNames.receipts);
+    }
+  }
+
+  Future<void> _markAll(BuildContext context, WidgetRef ref) async {
+    try {
+      await ref.read(notificationControllerProvider.notifier).markAllRead();
+    } catch (e) {
+      if (context.mounted) CustomSnackbar.show(context, getErrorMessage(e), error: true);
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedFilter = ref.watch(notificationControllerProvider).selectedFilter;
+    final state = ref.watch(notificationControllerProvider);
+    final controller = ref.read(notificationControllerProvider.notifier);
+    final unreadOnly = ref.watch(notificationUnreadOnlyProvider);
+    final int badgeCount = ref.watch(unreadCountProvider);
+    final int unread = controller.unreadTotal ?? badgeCount;
 
-    return Column(
-      children: [
-        AppHeaderBar(
-          title: AppStrings.notificationsTitle,
-          trailingLabel: AppStrings.markAllAsRead,
-          onTrailingTap: () => ref.read(notificationControllerProvider.notifier).markAllAsRead(),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSizes.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CustomFilterBar<String>(
-                  // TODO: replace hardcoded (12) / (2) counts with real
-                  // unread/total counts once notification data is fetched.
-                  filters: const ['all', 'unread'],
-                  selectedFilters: {selectedFilter},
-                  labelBuilder: (filter) => filter == 'all'
-                      ? '${AppStrings.filterAll} (12)'
-                      : '${AppStrings.filterUnread} (2)',
-                  onSelected: (filter) =>
-                      ref.read(notificationControllerProvider.notifier).selectFilter(filter),
-                ),
-                const SizedBox(height: AppSizes.md),
-                const InfoTipBanner(text: AppStrings.notificationsTip),
-                const SizedBox(height: AppSizes.md),
-                Column(
+    return SafeArea(
+      child: Column(
+        children: [
+          AppHeaderBar(
+            title: AppStrings.notificationsTitle,
+            backStyle: HeaderBackStyle.circle,
+            trailingLabel: unread > 0 ? AppStrings.markAllAsRead : null,
+            onTrailingTap: () => _markAll(context, ref),
+          ),
+          Expanded(
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: maxWidth),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    for (final item in _items) ...[
-                      item,
-                      if (item != _items.last) const SizedBox(height: AppSizes.md),
-                    ],
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(AppSizes.md, AppSizes.md, AppSizes.md, 0),
+                      child: CustomFilterBar<bool>(
+                        filters: const [false, true],
+                        selectedFilters: {unreadOnly},
+                        labelBuilder: (onlyUnread) => onlyUnread
+                            ? '${AppStrings.filterUnread}${unread > 0 ? ' ($unread)' : ''}'
+                            : AppStrings.filterAll,
+                        onSelected: (value) => ref.read(notificationUnreadOnlyProvider.notifier).setUnreadOnly(value),
+                      ),
+                    ),
+                    Expanded(
+                      child: PagedListView<NotificationModel>(
+                        state: state,
+                        onRefresh: () async {
+                          await controller.refresh();
+                          ref.read(unreadCountProvider.notifier).refresh();
+                        },
+                        onLoadMore: controller.loadMore,
+                        onRetryMore: controller.retryMore,
+                        spacing: AppSizes.sm + AppSizes.xs,
+                        empty: EmptyState(
+                          title: unreadOnly ? 'You\'re all caught up' : 'No notifications yet',
+                          message: 'Booking, payment and session updates will appear here.',
+                          icon: Icons.notifications_none_rounded,
+                        ),
+                        itemBuilder: (context, notification, _) => NotificationTile(
+                          notification: notification,
+                          onTap: () => _open(context, ref, notification),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

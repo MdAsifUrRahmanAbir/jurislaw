@@ -13,6 +13,6 @@ class LoginRepository {
   /// Also used for "Resend OTP" on the otp_verification screen — it's
   /// the same endpoint, just called again.
   Future<void> requestOtp(String phone) async {
-    await _apiClient.post(ApiEndpoints.requestOtp, data: {'phone': phone});
+    await _apiClient.post(ApiEndpoints.clientRequestOtp, data: {'phone': phone});
   }
 }

@@ -1,13 +1,16 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../data/repositories/lawyer_repository.dart';
+import '../../../lawyer_list/data/models/advocate_model.dart';
+import '../../../lawyer_list/data/repositories/advocate_repository.dart';
+import '../../data/models/dashboard_model.dart';
+import '../../data/repositories/home_repository.dart';
 
-/// Just the selected category chip — the lawyer list itself lives in
-/// [lawyersProvider] (shared with lawyer_list/lawyer_details).
-class HomeController extends Notifier<String> {
-  @override
-  String build() => lawyerCategories.first;
+/// GET /dashboard — invalidate after anything that changes a booking.
+final dashboardProvider = FutureProvider<DashboardModel>((ref) {
+  return ref.read(homeRepositoryProvider).fetchDashboard();
+});
 
-  void selectCategory(String category) => state = category;
-}
-
-final homeControllerProvider = NotifierProvider<HomeController, String>(HomeController.new);
+/// First page of the directory in "recommended" order, for the home feed.
+final recommendedAdvocatesProvider = FutureProvider<List<AdvocateSummary>>((ref) async {
+  final page = await ref.read(advocateRepositoryProvider).fetchAdvocates(const AdvocateQuery());
+  return page.items.take(6).toList();
+});

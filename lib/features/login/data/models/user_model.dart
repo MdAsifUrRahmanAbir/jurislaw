@@ -1,4 +1,5 @@
 import '../../../../core/session/app_user.dart';
+import '../../../../core/utils/json_utils.dart';
 
 class UserModel {
   final String id;
@@ -7,6 +8,10 @@ class UserModel {
   final String? email;
   final String? profilePhoto;
   final bool isProfileComplete;
+  final String? division;
+  final String? district;
+  final String? upazila;
+  final String? village;
 
   UserModel({
     required this.id,
@@ -15,16 +20,26 @@ class UserModel {
     this.email,
     this.profilePhoto,
     this.isProfileComplete = false,
+    this.division,
+    this.district,
+    this.upazila,
+    this.village,
   });
 
-  factory UserModel.fromJson(Map<String, dynamic> json) {
+  /// [photoUrl] is the separate `profile_photo_url` that GET /profile sends
+  /// next to `user` — it wins over the raw stored path inside `user`.
+  factory UserModel.fromJson(Map<String, dynamic> json, {String? photoUrl}) {
     return UserModel(
-      id: json['id'].toString(),
-      name: json['name'] as String? ?? '',
-      phone: json['phone'] as String? ?? '',
-      email: (json['email'] as String?)?.isEmpty ?? true ? null : json['email'] as String,
-      profilePhoto: (json['profile_photo'] as String?)?.isEmpty ?? true ? null : json['profile_photo'] as String,
-      isProfileComplete: json['is_profile_complete'] == true || json['is_profile_complete'] == 1 || json['is_profile_complete'] == '1',
+      id: Json.string(json, const ['id']),
+      name: Json.string(json, const ['name']),
+      phone: Json.string(json, const ['phone', 'mobile']),
+      email: Json.stringOrNull(json, const ['email']),
+      profilePhoto: photoUrl ?? Json.stringOrNull(json, const ['profile_photo_url', 'profile_photo', 'photo_url', 'avatar']),
+      isProfileComplete: Json.boolean(json, const ['is_profile_complete', 'isProfileComplete']),
+      division: Json.stringOrNull(json, const ['division']),
+      district: Json.stringOrNull(json, const ['district']),
+      upazila: Json.stringOrNull(json, const ['upazila']),
+      village: Json.stringOrNull(json, const ['village_mohalla', 'village']),
     );
   }
 
@@ -35,6 +50,10 @@ class UserModel {
         'email': email,
         'profile_photo': profilePhoto,
         'is_profile_complete': isProfileComplete,
+        'division': division,
+        'district': district,
+        'upazila': upazila,
+        'village_mohalla': village,
       };
 
   AppUser toAppUser() => AppUser(
@@ -44,5 +63,9 @@ class UserModel {
         email: email,
         profilePhoto: profilePhoto,
         isProfileComplete: isProfileComplete,
+        division: division,
+        district: district,
+        upazila: upazila,
+        village: village,
       );
 }

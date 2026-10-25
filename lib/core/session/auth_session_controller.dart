@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../constants/api_endpoints.dart';
 import '../network/api_client.dart';
 import '../storage/cache_policy.dart';
 import '../storage/secure_storage_service.dart';
@@ -63,7 +64,15 @@ class AuthSessionController extends Notifier<AuthSessionState> {
         (u) => u.toJson(),
       );
 
-  Future<void> logout() async {
+  /// [revokeRemotely] calls POST /logout first so the server revokes this
+  /// device's token (other devices stay signed in). A failed revoke never
+  /// blocks the local sign-out.
+  Future<void> logout({bool revokeRemotely = true}) async {
+    if (revokeRemotely && state.accessToken != null) {
+      try {
+        await _apiClient.post(ApiEndpoints.clientLogout);
+      } catch (_) {}
+    }
     await _secureStorage.clearAuthTokens();
     _apiClient.setAuthToken(null);
     await _cache.clearOnLogout();

@@ -20,7 +20,11 @@ class OtpController extends Notifier<OtpState> {
     state = state.copyWith(isVerifying: true, errorMessage: null);
     try {
       final result = await ref.read(otpRepositoryProvider).verifyOtp(phone: phone, otp: otp);
-      final AppUser user = result.user.toAppUser().copyWith(isProfileComplete: result.isProfileComplete);
+      final baseUser = result.user.toAppUser();
+      final AppUser user = baseUser.copyWith(
+        isProfileComplete: result.isProfileComplete,
+        phone: baseUser.phone.isEmpty ? phone : null,
+      );
 
       await ref.read(authSessionControllerProvider.notifier).onLoginSuccess(
             accessToken: result.token,

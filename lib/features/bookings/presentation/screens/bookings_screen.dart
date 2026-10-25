@@ -2,17 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukil_chaai/core/utils/responsive.dart';
 import 'bookings_mobile_view.dart';
-import 'bookings_tab_view.dart';
 
 class BookingsScreen extends ConsumerWidget {
   const BookingsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
+    return const Scaffold(
       body: Responsive(
-        mobile: const BookingsMobileView(),
-        tablet: const BookingsTabView(),
+        mobile: BookingsMobileView(),
+        tablet: BookingsMobileView(maxWidth: 680),
       ),
     );
   }

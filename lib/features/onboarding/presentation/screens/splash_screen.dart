@@ -35,7 +35,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     final status = ref.read(authSessionControllerProvider).status;
     if (status == AuthStatus.authenticated) {
-      context.go(RouteNames.mainShell);
+      // Every client endpoint except /profile/complete returns 403 until
+      // the profile is completed, so finish that first.
+      final user = ref.read(authSessionControllerProvider).user;
+      context.go(user != null && !user.isProfileComplete ? RouteNames.register : RouteNames.mainShell);
       return;
     }
 
@@ -51,7 +54,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       return;
     }
 
-    context.go(RouteNames.login);
+    context.go(RouteNames.onboarding);
   }
 
   @override

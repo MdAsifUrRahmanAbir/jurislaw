@@ -1,41 +1,74 @@
-/// currentStep: 0 profile, 1 booking form, 2 preview, 3 payment
-/// — mirrors ukil-chaai's LawyerDetailsController exactly.
+import '../../../lawyer_list/data/models/advocate_model.dart';
+
 class LawyerDetailsState {
-  final int currentStep;
-  final DateTime selectedDate;
-  final String selectedTime;
-  final String consultationType;
-  final String uploadedFileName;
-  final String selectedPaymentMethod;
-  final bool isProcessingPayment;
+  final AdvocateDetail? advocate;
+  final bool isLoading;
+  final String? errorMessage;
+  final List<AdvocateSlot> slots;
+  final bool hasMoreSlots;
+  final int slotPage;
+  final bool isLoadingMoreSlots;
+  final DateTime? selectedDate;
+  final String? selectedSlotId;
 
   const LawyerDetailsState({
-    this.currentStep = 0,
-    required this.selectedDate,
-    this.selectedTime = '',
-    this.consultationType = 'Video Call',
-    this.uploadedFileName = '',
-    this.selectedPaymentMethod = '',
-    this.isProcessingPayment = false,
+    this.advocate,
+    this.isLoading = true,
+    this.errorMessage,
+    this.slots = const [],
+    this.hasMoreSlots = false,
+    this.slotPage = 0,
+    this.isLoadingMoreSlots = false,
+    this.selectedDate,
+    this.selectedSlotId,
   });
 
+  /// Distinct slot days, soonest first.
+  List<DateTime> get slotDates {
+    final days = <DateTime>{
+      for (final s in slots)
+        if (s.date != null) DateTime(s.date!.year, s.date!.month, s.date!.day),
+    }.toList()
+      ..sort();
+    return days;
+  }
+
+  List<AdvocateSlot> get slotsForSelectedDate {
+    final day = selectedDate ?? (slotDates.isEmpty ? null : slotDates.first);
+    if (day == null) return slots;
+    return slots
+        .where((s) => s.date != null && s.date!.year == day.year && s.date!.month == day.month && s.date!.day == day.day)
+        .toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+  }
+
+  AdvocateSlot? get selectedSlot {
+    final match = slots.where((s) => s.id == selectedSlotId);
+    return match.isEmpty ? null : match.first;
+  }
+
   LawyerDetailsState copyWith({
-    int? currentStep,
+    AdvocateDetail? advocate,
+    bool? isLoading,
+    String? errorMessage,
+    List<AdvocateSlot>? slots,
+    bool? hasMoreSlots,
+    int? slotPage,
+    bool? isLoadingMoreSlots,
     DateTime? selectedDate,
-    String? selectedTime,
-    String? consultationType,
-    String? uploadedFileName,
-    String? selectedPaymentMethod,
-    bool? isProcessingPayment,
+    String? selectedSlotId,
+    bool clearSelectedSlot = false,
   }) {
     return LawyerDetailsState(
-      currentStep: currentStep ?? this.currentStep,
+      advocate: advocate ?? this.advocate,
+      isLoading: isLoading ?? this.isLoading,
+      errorMessage: errorMessage,
+      slots: slots ?? this.slots,
+      hasMoreSlots: hasMoreSlots ?? this.hasMoreSlots,
+      slotPage: slotPage ?? this.slotPage,
+      isLoadingMoreSlots: isLoadingMoreSlots ?? this.isLoadingMoreSlots,
       selectedDate: selectedDate ?? this.selectedDate,
-      selectedTime: selectedTime ?? this.selectedTime,
-      consultationType: consultationType ?? this.consultationType,
-      uploadedFileName: uploadedFileName ?? this.uploadedFileName,
-      selectedPaymentMethod: selectedPaymentMethod ?? this.selectedPaymentMethod,
-      isProcessingPayment: isProcessingPayment ?? this.isProcessingPayment,
+      selectedSlotId: clearSelectedSlot ? null : (selectedSlotId ?? this.selectedSlotId),
     );
   }
 }

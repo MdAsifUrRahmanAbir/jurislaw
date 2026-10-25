@@ -1,7 +1,6 @@
 class RegisterFormState {
   final String? division;
   final String? district;
-  final String? upazila;
   final String? imagePath;
   final bool isSubmitting;
   final String? errorMessage;
@@ -9,7 +8,6 @@ class RegisterFormState {
   const RegisterFormState({
     this.division,
     this.district,
-    this.upazila,
     this.imagePath,
     this.isSubmitting = false,
     this.errorMessage,
@@ -18,16 +16,16 @@ class RegisterFormState {
   RegisterFormState copyWith({
     String? division,
     String? district,
-    String? upazila,
+    bool clearDistrict = false,
     String? imagePath,
+    bool clearImage = false,
     bool? isSubmitting,
     String? errorMessage,
   }) {
     return RegisterFormState(
       division: division ?? this.division,
-      district: district ?? this.district,
-      upazila: upazila ?? this.upazila,
-      imagePath: imagePath ?? this.imagePath,
+      district: clearDistrict ? district : (district ?? this.district),
+      imagePath: clearImage ? null : (imagePath ?? this.imagePath),
       isSubmitting: isSubmitting ?? this.isSubmitting,
       errorMessage: errorMessage,
     );

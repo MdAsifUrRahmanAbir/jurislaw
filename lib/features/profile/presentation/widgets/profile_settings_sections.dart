@@ -8,6 +8,9 @@ import '../../../../core/widgets/common/settings_tile.dart';
 /// the caller's hands.
 class ProfileSettingsSections extends StatelessWidget {
   final VoidCallback? onPersonalInfoTap;
+  final VoidCallback? onBookingsTap;
+  final VoidCallback? onPaymentsTap;
+  final VoidCallback? onNotificationsTap;
   final VoidCallback? onSettingsTap;
   final VoidCallback? onPrivacyTap;
   final VoidCallback? onHelpCenterTap;
@@ -16,6 +19,9 @@ class ProfileSettingsSections extends StatelessWidget {
   const ProfileSettingsSections({
     super.key,
     this.onPersonalInfoTap,
+    this.onBookingsTap,
+    this.onPaymentsTap,
+    this.onNotificationsTap,
     this.onSettingsTap,
     this.onPrivacyTap,
     this.onHelpCenterTap,
@@ -33,14 +39,38 @@ class ProfileSettingsSections extends StatelessWidget {
             SettingsTile(
               icon: Icons.person_outline_rounded,
               title: 'Personal Info',
-              subtitle: 'Name, email and address',
+              subtitle: 'Name, email, address and photo',
               onTap: onPersonalInfoTap,
+            ),
+            SettingsTile(
+              icon: Icons.notifications_none_rounded,
+              title: 'Notifications',
+              subtitle: 'Booking, payment and session updates',
+              onTap: onNotificationsTap,
             ),
             SettingsTile(
               icon: Icons.settings_outlined,
               title: 'Settings',
-              subtitle: 'App preferences, language and security',
+              subtitle: 'App preferences and language',
               onTap: onSettingsTap,
+            ),
+          ],
+        ),
+        const SizedBox(height: 24),
+        SettingsGroup(
+          label: 'CONSULTATIONS',
+          children: [
+            SettingsTile(
+              icon: Icons.event_note_outlined,
+              title: 'My Bookings',
+              subtitle: 'Upcoming and past consultations',
+              onTap: onBookingsTap,
+            ),
+            SettingsTile(
+              icon: Icons.receipt_long_outlined,
+              title: 'Payment History',
+              subtitle: 'Receipts and refunds',
+              onTap: onPaymentsTap,
             ),
           ],
         ),

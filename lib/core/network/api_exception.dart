@@ -96,6 +96,25 @@ class ApiException implements Exception {
     );
   }
 
+  /// Machine-readable `data.code` the API sends with some 400/403 errors
+  /// (e.g. `payment_required`, `not_confirmed`, `already_closed`).
+  String? get code {
+    final source = errors;
+    if (source is Map && source['code'] != null) return source['code'].toString();
+    return null;
+  }
+
+  /// First field-level validation message from a 422 body, if any.
+  String? get firstFieldError {
+    final source = errors;
+    if (source is! Map) return null;
+    for (final value in source.values) {
+      if (value is List && value.isNotEmpty) return value.first.toString();
+      if (value is String && value.isNotEmpty) return value;
+    }
+    return null;
+  }
+
   @override
   String toString() => 'ApiException: $message (status: $statusCode)';
 }

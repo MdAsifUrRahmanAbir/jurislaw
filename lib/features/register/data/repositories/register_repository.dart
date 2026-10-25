@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukil_chaai/core/network/api_client.dart';
 import '../../../../core/constants/api_endpoints.dart';
@@ -10,30 +11,29 @@ class RegisterRepository {
   final ApiClient _apiClient;
   RegisterRepository(this._apiClient);
 
-  /// POST /profile/complete only ever returns `{message}` — no updated
+  /// POST /profile/complete (A2.2) only ever returns `{message}` — no updated
   /// user record — so the caller is responsible for updating the cached
-  /// [AppUser] locally with the values it just submitted.
+  /// [AppUser] locally with the values it just submitted. Upazila, village
+  /// and photo are optional; empty ones are left out of the body.
   Future<void> completeProfile({
     required String name,
     required String email,
     required String division,
     required String district,
-    required String upazila,
-    required String village,
-    required String imagePath,
+    String? upazila,
+    String? village,
+    String? imagePath,
   }) async {
-    await _apiClient.uploadFile(
-      ApiEndpoints.completeProfile,
-      imagePath,
-      fileKey: 'image',
-      extraData: {
-        'name': name,
-        'email': email,
-        'division': division,
-        'district': district,
-        'upazila': upazila,
-        'village': village,
-      },
-    );
+    final formData = FormData.fromMap({
+      'name': name,
+      'email': email,
+      'division': division,
+      'district': district,
+      if (upazila != null && upazila.isNotEmpty) 'upazila': upazila,
+      if (village != null && village.isNotEmpty) 'village_mohalla': village,
+      if (imagePath != null)
+        'profile_photo': await MultipartFile.fromFile(imagePath, filename: imagePath.split(RegExp(r'[\\/]')).last),
+    });
+    await _apiClient.post(ApiEndpoints.clientProfileComplete, data: formData);
   }
 }

@@ -3,101 +3,140 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/session/auth_session_controller.dart';
-import '../../../../core/theme/app_color_scheme.dart';
+import '../../../../core/utils/error_mapper.dart';
+import '../../../../core/widgets/utility/custom_loader.dart';
+import '../../../../core/widgets/utility/error_state.dart';
 import '../../../../routes/route_names.dart';
-import '../../data/repositories/lawyer_repository.dart';
+import '../../../bookings/data/models/booking_model.dart';
+import '../../../bookings/presentation/widgets/booking_list_item.dart';
+import '../../../lawyer_list/presentation/widgets/advocate_card.dart';
+import '../../../main_shell/presentation/controllers/main_shell_controller.dart';
+import '../../../notifications/presentation/controllers/notification_controller.dart';
 import '../controllers/home_controller.dart';
+import '../widgets/advocate_search_card.dart';
+import '../widgets/dashboard_sections.dart';
 import '../widgets/home_header.dart';
-import '../widgets/lawyer_card.dart';
-import '../widgets/lawyer_category_chips.dart';
-import '../widgets/nearby_lawyer_card.dart';
 
+/// Client dashboard (A3.1) — search card, consultations that need an
+/// answer, stats, today's and upcoming consultations, and recommended
+/// advocates. [maxWidth] centers it on wider screens.
 class HomeMobileView extends ConsumerWidget {
-  const HomeMobileView({super.key});
+  final double maxWidth;
+
+  const HomeMobileView({super.key, this.maxWidth = double.infinity});
+
+  void _goToTab(WidgetRef ref, int index) => ref.read(mainShellControllerProvider.notifier).selectTab(index);
+
+  Future<void> _refresh(WidgetRef ref) async {
+    ref.invalidate(recommendedAdvocatesProvider);
+    ref.read(unreadCountProvider.notifier).refresh();
+    try {
+      ref.invalidate(dashboardProvider);
+      await ref.read(dashboardProvider.future);
+    } catch (_) {
+      // The error is rendered by the dashboard section itself.
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(authSessionControllerProvider).user;
-    final lawyers = ref.watch(lawyersProvider);
-    final selectedCategory = ref.watch(homeControllerProvider);
+    final dashboard = ref.watch(dashboardProvider);
+    final advocates = ref.watch(recommendedAdvocatesProvider);
+    final unread = ref.watch(unreadCountProvider);
+
+    void openBooking(BookingModel b) => context.push(RouteNames.bookingDetailsPath(b.id));
+
+    Widget bookingList(List<BookingModel> bookings) => Column(
+          children: [
+            for (final b in bookings)
+              Padding(
+                padding: const EdgeInsets.only(bottom: AppSizes.sm + AppSizes.xs),
+                child: BookingListItem(booking: b, onTap: () => openBooking(b)),
+              ),
+          ],
+        );
+
+    final dashboardSections = dashboard.when(
+      loading: () => [const Padding(padding: EdgeInsets.all(AppSizes.xl), child: CustomLoader())],
+      error: (e, _) => [ErrorState(message: getErrorMessage(e), onRetry: () => ref.invalidate(dashboardProvider))],
+      data: (data) {
+        final needsResponse = data.needsResponse;
+        final upcoming = data.upcoming.where((b) => !b.needsResponse).toList();
+        return [
+          if (needsResponse.isNotEmpty) ...[
+            const HomeSectionTitle(title: 'Needs your response'),
+            bookingList(needsResponse),
+            const SizedBox(height: AppSizes.md),
+          ],
+          if (data.stats.isNotEmpty) ...[
+            DashboardStatsRow(stats: data.stats),
+            const SizedBox(height: AppSizes.lg),
+          ],
+          if (data.today.isNotEmpty) ...[
+            const HomeSectionTitle(title: 'Today'),
+            bookingList(data.today),
+            const SizedBox(height: AppSizes.md),
+          ],
+          HomeSectionTitle(title: 'Upcoming Consultations', onSeeAll: () => _goToTab(ref, 2)),
+          if (upcoming.isEmpty && needsResponse.isEmpty)
+            const HomeEmptyNote(icon: Icons.event_available_outlined, text: 'No upcoming consultations. Find an advocate below to book one.')
+          else
+            bookingList(upcoming),
+        ];
+      },
+    );
 
     return Column(
       children: [
         HomeHeader(
-          userName: user?.name ?? 'User',
+          userName: (user?.name.isNotEmpty ?? false) ? user!.name : 'there',
           avatarUrl: user?.profilePhoto,
-          hasUnreadNotifications: true,
-          onNotificationTap: () => context.push(RouteNames.notifications),
+          unreadCount: unread,
+          onAvatarTap: () => _goToTab(ref, 3),
+          onNotificationTap: () async {
+            await context.push(RouteNames.notifications);
+            ref.read(unreadCountProvider.notifier).refresh();
+          },
         ),
         Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: AppSizes.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                  child: Text(
-                    'Select Category',
-                    style: TextStyle(fontSize: AppSizes.fontMd, fontWeight: FontWeight.w700, color: context.appColors.textPrimary),
-                  ),
-                ),
-                const SizedBox(height: AppSizes.sm),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                  child: LawyerCategoryChips(
-                    categories: lawyerCategories,
-                    selected: selectedCategory,
-                    onSelected: (c) => ref.read(homeControllerProvider.notifier).selectCategory(c),
-                  ),
-                ),
-                const SizedBox(height: AppSizes.lg),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                  child: Text(
-                    'Top Rated',
-                    style: TextStyle(fontSize: AppSizes.fontMd, fontWeight: FontWeight.w700, color: context.appColors.textPrimary),
-                  ),
-                ),
-                const SizedBox(height: AppSizes.sm),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
+          child: RefreshIndicator(
+            onRefresh: () => _refresh(ref),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              padding: const EdgeInsets.all(AppSizes.md),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxWidth),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      for (final lawyer in lawyers)
-                        LawyerCard(
-                          lawyer: lawyer,
-                          onTap: () => context.push(RouteNames.lawyerDetails, extra: lawyer),
-                        ),
+                      AdvocateSearchCard(onSearch: () => _goToTab(ref, 1)),
+                      const SizedBox(height: AppSizes.lg),
+                      ...dashboardSections,
+                      const SizedBox(height: AppSizes.lg),
+                      HomeSectionTitle(title: 'Recommended Advocates', onSeeAll: () => _goToTab(ref, 1)),
+                      ...advocates.when(
+                        loading: () => [const Padding(padding: EdgeInsets.all(AppSizes.lg), child: CustomLoader())],
+                        error: (e, _) => [HomeEmptyNote(icon: Icons.cloud_off_rounded, text: getErrorMessage(e))],
+                        data: (list) => list.isEmpty
+                            ? [const HomeEmptyNote(icon: Icons.gavel_outlined, text: 'No advocates are available right now.')]
+                            : [
+                                for (final a in list)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: AppSizes.sm + AppSizes.xs),
+                                    child: AdvocateCard(
+                                      advocate: a,
+                                      onTap: () => context.push(RouteNames.lawyerDetailsPath(a.id), extra: a),
+                                    ),
+                                  ),
+                              ],
+                      ),
+                      const SizedBox(height: AppSizes.xxl),
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSizes.md),
-
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                  child: Text(
-                    'Nearby You',
-                    style: TextStyle(fontSize: AppSizes.fontMd, fontWeight: FontWeight.w700, color: context.appColors.textPrimary),
-                  ),
-                ),
-                const SizedBox(height: AppSizes.sm),
-                SizedBox(
-                  height: 220,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.md),
-                    children: [
-                      for (final lawyer in lawyers)
-                        NearbyLawyerCard(
-                          lawyer: lawyer,
-                          onTap: () => context.push(RouteNames.lawyerDetails, extra: lawyer),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
+              ),
             ),
           ),
         ),

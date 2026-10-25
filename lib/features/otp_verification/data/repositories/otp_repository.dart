@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukil_chaai/core/network/api_client.dart';
 import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/utils/json_utils.dart';
 import '../../../login/data/models/otp_verify_result.dart';
 
 final otpRepositoryProvider = Provider<OtpRepository>((ref) {
@@ -13,9 +14,9 @@ class OtpRepository {
 
   Future<OtpVerifyResult> verifyOtp({required String phone, required String otp}) async {
     final response = await _apiClient.post(
-      ApiEndpoints.verifyOtp,
+      ApiEndpoints.clientVerifyOtp,
       data: {'phone': phone, 'otp': otp},
     );
-    return OtpVerifyResult.fromJson(response.data['data'] as Map<String, dynamic>);
+    return OtpVerifyResult.fromJson(Json.data(response.data), phone: phone);
   }
 }

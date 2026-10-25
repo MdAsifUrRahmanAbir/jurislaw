@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/localization/gen/app_localizations.dart';
 import '../../../../core/theme/app_color_scheme.dart';
-import '../../../../routes/route_names.dart';
 import '../controllers/main_shell_controller.dart';
 import '../widgets/shell_tab_body.dart';
 import '../widgets/shell_navigation_item.dart';
@@ -22,7 +20,9 @@ class MainShellTabView extends ConsumerWidget {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push(RouteNames.intakeForm),
+        // Booking starts from an advocate's slots, so the FAB opens the directory.
+        tooltip: 'Book a consultation',
+        onPressed: () => ref.read(mainShellControllerProvider.notifier).selectTab(1),
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add_comment_rounded, color: AppColors.textWhite),
       ),

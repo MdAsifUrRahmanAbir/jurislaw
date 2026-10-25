@@ -1,21 +1,70 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/constants/api_endpoints.dart';
+import '../../../../core/network/api_client.dart';
+import '../../../../core/network/paginated_response.dart';
+import '../../../../core/utils/json_utils.dart';
 import '../models/booking_model.dart';
 
-final bookingRepositoryProvider = Provider<BookingRepository>((ref) => BookingRepository());
+final bookingRepositoryProvider = Provider<BookingRepository>((ref) {
+  return BookingRepository(ref.watch(apiClientProvider));
+});
 
-/// No bookings API exists yet — ukil-chaai-client's own bookings screen has
-/// no controller or API call either, just a static placeholder list. This
-/// returns local dummy data with the same shape a real endpoint response
-/// would have, so a real `fetchBookings()` implementation can replace the
-/// body here later without touching any caller.
+/// Client consultations — A5.1 to A5.6.
 class BookingRepository {
-  List<BookingModel> fetchBookings() => [
-        BookingModel(id: '1', personName: 'Laura Lim', dateTime: DateTime(2026, 4, 15, 10, 0), status: BookingStatus.upcoming),
-        BookingModel(id: '2', personName: 'Arafat Karim', dateTime: DateTime(2026, 4, 18, 14, 30), status: BookingStatus.upcoming),
-        BookingModel(id: '3', personName: 'Jhon Smith', dateTime: DateTime(2026, 3, 2, 9, 0), status: BookingStatus.completed),
-        BookingModel(id: '4', personName: 'Mitu Rahman', dateTime: DateTime(2026, 2, 20, 11, 0), status: BookingStatus.completed),
-        BookingModel(id: '5', personName: 'Sabbir Hossain', dateTime: DateTime(2026, 1, 30, 16, 0), status: BookingStatus.completed),
-        BookingModel(id: '6', personName: 'Nusrat Jahan', dateTime: DateTime(2026, 1, 12, 13, 0), status: BookingStatus.completed),
-        BookingModel(id: '7', personName: 'Kamal Uddin', dateTime: DateTime(2025, 12, 28, 10, 0), status: BookingStatus.completed),
-      ];
+  final ApiClient _apiClient;
+  BookingRepository(this._apiClient);
+
+  /// GET /bookings — newest first, 20 per page.
+  Future<PaginatedResponse<BookingModel>> fetchBookings({int page = 1}) async {
+    final response = await _apiClient.get(ApiEndpoints.myBookings, queryParameters: {'page': page});
+    return PaginatedResponse.fromBody(
+      response.data,
+      BookingModel.fromJson,
+      requestedPage: page,
+      listKeys: const ['data', 'bookings'],
+    );
+  }
+
+  /// GET /bookings/{id}
+  Future<BookingModel> fetchBooking(String bookingId) async {
+    final response = await _apiClient.get(ApiEndpoints.bookingDetail(bookingId));
+    final data = Json.data(response.data);
+    return BookingModel.fromJson(Json.map(data, const ['booking']) ?? data);
+  }
+
+  /// POST /schedules/{id}/book — 201 with the new booking in
+  /// `pending_payment`; the slot is held for 15 minutes.
+  Future<BookingModel> bookSlot(String scheduleId, {required String caseDetails}) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.bookSlot(scheduleId),
+      data: {'case_details': caseDetails},
+    );
+    final data = Json.data(response.data);
+    return BookingModel.fromJson(Json.map(data, const ['booking']) ?? data);
+  }
+
+  /// POST /bookings/{id}/reschedule/accept — returns the server message.
+  Future<String?> acceptReschedule(String bookingId) async {
+    final response = await _apiClient.post(ApiEndpoints.rescheduleAccept(bookingId));
+    return Json.message(response.data);
+  }
+
+  /// POST /bookings/{id}/reschedule/decline — the decline always stands;
+  /// only the optional counter-offer can fail. Read the message.
+  Future<String?> declineReschedule(String bookingId, {String? requestedScheduleId}) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.rescheduleDecline(bookingId),
+      data: {'requested_schedule_id': ?requestedScheduleId},
+    );
+    return Json.message(response.data);
+  }
+
+  /// POST /bookings/{id}/cancel — cancels a paid booking and opens a refund.
+  Future<String?> cancelBooking(String bookingId, {required String reason}) async {
+    final response = await _apiClient.post(
+      ApiEndpoints.bookingCancel(bookingId),
+      data: {'cancellation_reason': reason},
+    );
+    return Json.message(response.data);
+  }
 }

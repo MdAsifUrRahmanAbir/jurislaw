@@ -1,24 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/localization/gen/app_localizations.dart';
 import '../../../../core/session/auth_session_controller.dart';
 import '../../../../core/utils/error_mapper.dart';
+import '../../../profile/presentation/controllers/profile_controller.dart';
+import '../../data/repositories/edit_profile_repository.dart';
 import '../states/edit_profile_state.dart';
 
-/// Mirrors ukil-chaai's UpdateProfileController: phone/bio/location fields
-/// exist in the UI but only name/email are actually persisted — there is
-/// no real profile-update endpoint on either side yet (source's own
-/// `saveProfile()` is a `Future.delayed` stub referencing a URL that's
-/// never called). Ported as-is rather than inventing a fake API call.
+/// Edits the client profile through POST /profile (`_method=PUT`, A2.3).
+/// Phone is the login identity and is shown read-only.
 class EditProfileController extends Notifier<EditProfileState> {
   final formKey = GlobalKey<FormState>();
+  final _picker = ImagePicker();
 
   late final TextEditingController nameController;
   late final TextEditingController emailController;
   late final TextEditingController phoneController;
-  late final TextEditingController bioController;
-  late final TextEditingController locationController;
+  late final TextEditingController upazilaController;
+  late final TextEditingController villageController;
 
   @override
   EditProfileState build() {
@@ -26,18 +27,30 @@ class EditProfileController extends Notifier<EditProfileState> {
     nameController = TextEditingController(text: cachedUser?.name ?? '');
     emailController = TextEditingController(text: cachedUser?.email ?? '');
     phoneController = TextEditingController(text: cachedUser?.phone ?? '');
-    bioController = TextEditingController();
-    locationController = TextEditingController();
+    upazilaController = TextEditingController(text: cachedUser?.upazila ?? '');
+    villageController = TextEditingController(text: cachedUser?.village ?? '');
 
     ref.onDispose(() {
       nameController.dispose();
       emailController.dispose();
       phoneController.dispose();
-      bioController.dispose();
-      locationController.dispose();
+      upazilaController.dispose();
+      villageController.dispose();
     });
 
-    return const EditProfileState();
+    return EditProfileState(division: cachedUser?.division, district: cachedUser?.district);
+  }
+
+  void setDivision(String? value) {
+    if (value == state.division) return;
+    state = state.copyWith(division: value, clearDistrict: true);
+  }
+
+  void setDistrict(String? value) => state = state.copyWith(district: value);
+
+  Future<void> pickPhoto(ImageSource source) async {
+    final file = await _picker.pickImage(source: source, imageQuality: 50, maxWidth: 1200);
+    if (file != null) state = state.copyWith(newPhotoPath: file.path);
   }
 
   String? validateName(String? value, AppLocalizations l10n) =>
@@ -45,30 +58,47 @@ class EditProfileController extends Notifier<EditProfileState> {
 
   String? validateEmail(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) return l10n.emailRequired;
-    if (!value.contains('@')) return l10n.emailInvalid;
+    if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(value.trim())) return l10n.emailInvalid;
     return null;
   }
 
-  /// Returns true on success. Only name/email are sent anywhere (there is
-  /// no real update-profile endpoint — see class doc) — bio/location/phone
-  /// stay local-only UI fields, matching source.
+  /// Returns true on success. Sends every editable field (the API treats
+  /// it as a partial update), then re-reads GET /profile so the cached
+  /// user — including the new photo URL — matches the server.
   Future<bool> submit() async {
+    if (state.isSubmitting) return false;
     if (!(formKey.currentState?.validate() ?? false)) return false;
 
     state = state.copyWith(isSubmitting: true, errorMessage: null);
     try {
-      // TODO: call the real profile-update endpoint once one exists —
-      // ukil-chaai never wired its own (dead `profileUpdateURL` reference).
-      await Future.delayed(const Duration(milliseconds: 400));
+      final name = nameController.text.trim();
+      final email = emailController.text.trim();
+      final upazila = upazilaController.text.trim();
+      final village = villageController.text.trim();
+
+      await ref.read(editProfileRepositoryProvider).updateProfile(
+            name: name,
+            email: email,
+            division: state.division,
+            district: state.district,
+            upazila: upazila,
+            village: village,
+            imagePath: state.newPhotoPath,
+          );
 
       final session = ref.read(authSessionControllerProvider.notifier);
       final currentUser = ref.read(authSessionControllerProvider).user;
       if (currentUser != null) {
         await session.updateUser(currentUser.copyWith(
-          name: nameController.text.trim(),
-          email: emailController.text.trim(),
+          name: name,
+          email: email,
+          division: state.division,
+          district: state.district,
+          upazila: upazila,
+          village: village,
         ));
       }
+      await ref.read(profileControllerProvider.notifier).refresh();
 
       state = state.copyWith(isSubmitting: false);
       return true;

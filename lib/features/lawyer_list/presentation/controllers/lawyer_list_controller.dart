@@ -1,35 +1,51 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../home/data/models/lawyer_model.dart';
-import '../../../home/data/repositories/lawyer_repository.dart';
-import '../states/lawyer_list_state.dart';
+import '../../../../core/constants/bd_locations.dart';
+import '../../../../core/network/paginated_response.dart';
+import '../../../../core/state/paged_list_state.dart';
+import '../../data/models/advocate_model.dart';
+import '../../data/repositories/advocate_repository.dart';
 
-const lawyerAreas = ['All', 'Family', 'Criminal', 'Land', 'Divorce', 'Business', 'Tax', 'Labor Law', 'Writ'];
-const lawyerLocations = ['All', 'Dhaka', 'Chattogram', 'Sylhet', 'Rajshahi'];
-
-class LawyerFilterController extends Notifier<LawyerFilterState> {
+/// The directory's current search/sort/filter. Kept separate from the
+/// list so the home screen's search card can set it before switching to
+/// the Lawyers tab.
+class AdvocateQueryController extends Notifier<AdvocateQuery> {
   @override
-  LawyerFilterState build() => const LawyerFilterState();
+  AdvocateQuery build() => const AdvocateQuery();
 
-  void setArea(String value) => state = state.copyWith(area: value);
-  void setLocation(String value) => state = state.copyWith(location: value);
-  void setMinExperience(int value) => state = state.copyWith(minExperience: value);
-  void setMaxFee(double value) => state = state.copyWith(maxFee: value);
-  void reset() => state = const LawyerFilterState();
+  void set(AdvocateQuery query) => state = query;
+  void setSearch(String q) => state = state.copyWith(q: q);
+  void setSort(String sort) => state = state.copyWith(sort: sort);
+  void reset() => state = AdvocateQuery(sort: state.sort);
 }
 
-final lawyerFilterControllerProvider =
-    NotifierProvider.autoDispose<LawyerFilterController, LawyerFilterState>(LawyerFilterController.new);
+final advocateQueryProvider = NotifierProvider<AdvocateQueryController, AdvocateQuery>(AdvocateQueryController.new);
 
-final filteredLawyersProvider = Provider.autoDispose<List<Lawyer>>((ref) {
-  final all = ref.watch(lawyersProvider);
-  final filter = ref.watch(lawyerFilterControllerProvider);
+/// GET /advocates, re-fetched from page 1 whenever the query changes.
+class AdvocateDirectoryController extends PagedListNotifier<AdvocateSummary> {
+  @override
+  PagedListState<AdvocateSummary> build() {
+    ref.listen(advocateQueryProvider, (_, _) => refresh());
+    return initialLoad();
+  }
 
-  return all.where((lawyer) {
-    final matchArea = filter.area == 'All' || lawyer.practiceAreas.contains(filter.area) || lawyer.specialty.contains(filter.area);
-    final matchLoc = filter.location == 'All' || lawyer.location.toLowerCase().contains(filter.location.toLowerCase());
-    final matchExp = lawyer.experience >= filter.minExperience;
-    final matchRating = lawyer.rating >= filter.minRating;
-    final matchFee = lawyer.fee <= filter.maxFee;
-    return matchArea && matchLoc && matchExp && matchRating && matchFee;
-  }).toList();
+  @override
+  Future<PaginatedResponse<AdvocateSummary>> fetchPage(int page) =>
+      ref.read(advocateRepositoryProvider).fetchAdvocates(ref.read(advocateQueryProvider), page: page);
+}
+
+final advocateDirectoryProvider =
+    NotifierProvider<AdvocateDirectoryController, PagedListState<AdvocateSummary>>(AdvocateDirectoryController.new);
+
+/// GET /advocates/filters. Falls back to the static division/district list
+/// if the call fails, so the filter sheet always has something to show.
+final advocateFiltersProvider = FutureProvider<AdvocateFilters>((ref) async {
+  try {
+    return await ref.read(advocateRepositoryProvider).fetchFilters();
+  } catch (_) {
+    return AdvocateFilters(
+      divisions: BdLocations.divisions,
+      districtsByDivision: BdLocations.districtsByDivision,
+      districts: BdLocations.districtsByDivision.values.expand((e) => e).toList()..sort(),
+    );
+  }
 });

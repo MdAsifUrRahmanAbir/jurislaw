@@ -19,15 +19,12 @@ class OnboardingScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Scaffold(
-      body: Responsive(
-        mobile: const OnboardingMobileView(),
-        tablet: const OnboardingTabView(),
-      ),
+    return Responsive(
+      mobile: const OnboardingMobileView(),
+      tablet: const OnboardingTabView(),
     );
   }
 }
-
 
 class OnboardingMobileView extends ConsumerStatefulWidget {
   const OnboardingMobileView({super.key});
@@ -52,58 +49,78 @@ class _OnboardingMobileViewState extends ConsumerState<OnboardingMobileView> {
     context.go(RouteNames.login);
   }
 
+  void _next(bool isLastSlide) {
+    if (isLastSlide) {
+      _finish();
+    } else {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final slides = ref.read(onboardingControllerProvider.notifier).slidesFor(context);
-    final isLastSlide = _currentIndex == slides.length - 1;
 
-    return SafeArea(
-      child: Column(
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg, vertical: AppSizes.sm),
-            child: OnboardingTopBar(onSkip: _finish),
+          // Full-screen swipeable background
+          PageView.builder(
+            controller: _pageController,
+            physics: const PageScrollPhysics(),
+            itemCount: slides.length,
+            onPageChanged: (index) => setState(() => _currentIndex = index),
+            itemBuilder: (context, index) => OnboardingItemWidget(data: slides[index]),
           ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg),
-              child: Stack(
-                children: [
-                  PageView.builder(
-                    controller: _pageController,
-                    itemCount: slides.length,
-                    onPageChanged: (index) => setState(() => _currentIndex = index),
-                    itemBuilder: (context, index) => OnboardingItemWidget(data: slides[index]),
+
+          // Bottom scrim so text/controls stay legible over any image
+          const IgnorePointer(
+            child: Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.transparent, Colors.black87],
+                    stops: [0.0, 0.55, 1.0],
                   ),
-                  Positioned(
-                    bottom: 120,
-                    left: 0,
-                    right: 0,
-                    child: Column(
-                      children: [
-                        const SizedBox(height: AppSizes.lg),
-                        CustomStepIndicator(stepCount: slides.length, currentStep: _currentIndex),
-                      ],
-                    ),
-                  )
-                ],
+                ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(AppSizes.lg),
-            child: PrimaryButton(
-              label: isLastSlide ? AppLocalizations.of(context)!.getStarted : AppLocalizations.of(context)!.next,
-              onPressed: () {
-                if (isLastSlide) {
-                  _finish();
-                } else {
-                  _pageController.nextPage(
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                }
-              },
+
+          // Skip button (top)
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.lg, vertical: AppSizes.sm),
+              child: OnboardingTopBar(onSkip: _finish),
+            ),
+          ),
+
+          // Step indicator + CTA button (bottom)
+          SafeArea(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.all(AppSizes.lg),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomStepIndicator(stepCount: slides.length, currentStep: _currentIndex),
+                    const SizedBox(height: AppSizes.lg),
+                    PrimaryButton(
+                      label: _currentIndex == slides.length - 1
+                          ? AppLocalizations.of(context)!.getStarted
+                          : AppLocalizations.of(context)!.next,
+                      onPressed: () => _next(_currentIndex == slides.length - 1),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],
@@ -112,9 +129,9 @@ class _OnboardingMobileViewState extends ConsumerState<OnboardingMobileView> {
   }
 }
 
-
-/// Same content as [OnboardingMobileView], centered in a fixed-width
-/// column for wider (tablet/web) viewports.
+/// Same behavior as [OnboardingMobileView] for wider (tablet/web) viewports —
+/// still full-bleed, content just isn't width-constrained since the image
+/// should fill the whole viewport regardless of device size.
 class OnboardingTabView extends ConsumerStatefulWidget {
   const OnboardingTabView({super.key});
 
@@ -138,59 +155,74 @@ class _OnboardingTabViewState extends ConsumerState<OnboardingTabView> {
     context.go(RouteNames.login);
   }
 
+  void _next(bool isLastSlide) {
+    if (isLastSlide) {
+      _finish();
+    } else {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final slides = ref.read(onboardingControllerProvider.notifier).slidesFor(context);
-    final isLastSlide = _currentIndex == slides.length - 1;
 
-    return SafeArea(
-      child: Center(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 480),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl, vertical: AppSizes.sm),
-                child: OnboardingTopBar(onSkip: _finish),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: PageView.builder(
-                          controller: _pageController,
-                          itemCount: slides.length,
-                          onPageChanged: (index) => setState(() => _currentIndex = index),
-                          itemBuilder: (context, index) => OnboardingItemWidget(data: slides[index]),
-                        ),
-                      ),
-                      const SizedBox(height: AppSizes.lg),
-                      CustomStepIndicator(stepCount: slides.length, currentStep: _currentIndex),
-                    ],
+    return Scaffold(
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          PageView.builder(
+            controller: _pageController,
+            physics: const PageScrollPhysics(),
+            itemCount: slides.length,
+            onPageChanged: (index) => setState(() => _currentIndex = index),
+            itemBuilder: (context, index) => OnboardingItemWidget(data: slides[index]),
+          ),
+          const IgnorePointer(
+            child: Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [Colors.transparent, Colors.transparent, Colors.black87],
+                    stops: [0.0, 0.55, 1.0],
                   ),
                 ),
               ),
-              Padding(
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSizes.xl, vertical: AppSizes.sm),
+              child: OnboardingTopBar(onSkip: _finish),
+            ),
+          ),
+          SafeArea(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
                 padding: const EdgeInsets.all(AppSizes.xl),
-                child: PrimaryButton(
-                  label: isLastSlide ? AppLocalizations.of(context)!.getStarted : AppLocalizations.of(context)!.next,
-                  onPressed: () {
-                    if (isLastSlide) {
-                      _finish();
-                    } else {
-                      _pageController.nextPage(
-                        duration: const Duration(milliseconds: 300),
-                        curve: Curves.easeInOut,
-                      );
-                    }
-                  },
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CustomStepIndicator(stepCount: slides.length, currentStep: _currentIndex),
+                    const SizedBox(height: AppSizes.lg),
+                    PrimaryButton(
+                      label: _currentIndex == slides.length - 1
+                          ? AppLocalizations.of(context)!.getStarted
+                          : AppLocalizations.of(context)!.next,
+                      onPressed: () => _next(_currentIndex == slides.length - 1),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_sizes.dart';
 import '../../../../core/localization/gen/app_localizations.dart';
+import '../../../../core/widgets/common/bd_address_fields.dart';
 import '../../../../core/widgets/common/custom_card.dart';
 import '../../../../core/widgets/common/primary_input_field.dart';
 import '../../../../core/widgets/common/primary_button.dart';
@@ -53,15 +54,13 @@ class EditProfileForm extends ConsumerWidget {
               enabled: false,
             ),
             const SizedBox(height: AppSizes.md),
-            PrimaryInputField(
-              label: 'Location',
-              controller: controller.locationController,
-            ),
-            const SizedBox(height: AppSizes.md),
-            PrimaryInputField(
-              label: 'Bio',
-              controller: controller.bioController,
-              maxLines: 4,
+            BdAddressFields(
+              division: state.division,
+              district: state.district,
+              upazilaController: controller.upazilaController,
+              villageController: controller.villageController,
+              onDivisionChanged: controller.setDivision,
+              onDistrictChanged: controller.setDistrict,
             ),
             if (showSaveButton) ...[
               const SizedBox(height: AppSizes.lg),

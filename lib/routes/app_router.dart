@@ -24,7 +24,13 @@ import 'package:ukil_chaai/features/bookings/presentation/screens/bookings_scree
 import 'package:ukil_chaai/features/intake_form/presentation/screens/intake_form_screen.dart';
 import 'package:ukil_chaai/features/lawyer_list/presentation/screens/lawyer_list_screen.dart';
 import 'package:ukil_chaai/features/lawyer_details/presentation/screens/lawyer_details_screen.dart';
-import 'package:ukil_chaai/features/home/data/models/lawyer_model.dart';
+import 'package:ukil_chaai/features/lawyer_list/data/models/advocate_model.dart';
+import 'package:ukil_chaai/features/bookings/presentation/screens/booking_details_screen.dart';
+import 'package:ukil_chaai/features/payments/presentation/screens/checkout_screen.dart';
+import 'package:ukil_chaai/features/payments/presentation/screens/payment_gateway_screen.dart';
+import 'package:ukil_chaai/features/payments/presentation/screens/payment_status_screen.dart';
+import 'package:ukil_chaai/features/payments/presentation/screens/receipts_screen.dart';
+import 'package:ukil_chaai/features/session/presentation/screens/session_room_screen.dart';
 import 'package:ukil_chaai/features/twofa_security/presentation/screens/twofa_security_screen.dart';
 
 import '../core/network/connectivity_provider.dart';
@@ -168,7 +174,37 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: RouteNames.lawyerDetails,
-        builder: (_, state) => LawyerDetailsScreen(lawyer: state.extra as Lawyer),
+        builder: (_, state) => LawyerDetailsScreen(
+          advocateId: state.pathParameters['advocateId']!,
+          preview: state.extra is AdvocateSummary ? state.extra as AdvocateSummary : null,
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.bookingDetails,
+        builder: (_, state) => BookingDetailsScreen(bookingId: state.pathParameters['bookingId']!),
+      ),
+      GoRoute(
+        path: RouteNames.checkout,
+        builder: (_, state) => CheckoutScreen(bookingId: state.pathParameters['bookingId']!),
+      ),
+      GoRoute(
+        path: RouteNames.paymentGateway,
+        builder: (_, state) => PaymentGatewayScreen(args: state.extra as PaymentGatewayArgs),
+      ),
+      GoRoute(
+        path: RouteNames.paymentStatus,
+        builder: (_, state) => PaymentStatusScreen(
+          transactionId: state.pathParameters['transactionId']!,
+          bookingId: state.uri.queryParameters['bookingId'],
+        ),
+      ),
+      GoRoute(
+        path: RouteNames.receipts,
+        builder: (_, _) => const ReceiptsScreen(),
+      ),
+      GoRoute(
+        path: RouteNames.sessionRoom,
+        builder: (_, state) => SessionRoomScreen(bookingId: state.pathParameters['bookingId']!),
       ),
       GoRoute(
         path: RouteNames.twofaSecurity,
