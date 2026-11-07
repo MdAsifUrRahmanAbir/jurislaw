@@ -6,7 +6,7 @@
 class AssetsRes {
   AssetsRes._();
 
-  static const String PROJECT_NAME = 'my_structure';
+  static const String PROJECT_NAME = 'ukil_chaai_client';
   static const String PROJECT_VERSION = '1.0.0+1';
   static const String ONBOARD1 = 'assets/onboard/onboard1.png';
   static const String ONBOARD2 = 'assets/onboard/onboard2.png';

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_structure/app/core/constants/app_colors.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_colors.dart';
 
 class LanguageCard extends StatelessWidget {
   final String label;
@@ -20,7 +20,7 @@ class LanguageCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppColors.divider),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.03), blurRadius: 10, offset: const Offset(0, 4)),
+            BoxShadow(color: Colors.black.withValues(alpha: 0.03), blurRadius: 10, offset: const Offset(0, 4)),
           ],
         ),
         child: Row(

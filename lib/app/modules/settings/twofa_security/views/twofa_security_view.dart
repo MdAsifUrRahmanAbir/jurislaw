@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/constants/app_colors.dart';
-import 'package:my_structure/app/core/constants/app_sizes.dart';
-import 'package:my_structure/app/core/constants/app_strings.dart';
-import 'package:my_structure/app/widgets/pin_code_field_widget.dart';
-import 'package:my_structure/app/widgets/primary_appbar_widget.dart';
-import 'package:my_structure/app/widgets/primary_button.dart';
-import 'package:my_structure/app/widgets/toggle_switch_widget.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_colors.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_sizes.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_strings.dart';
+import 'package:ukil_chaai_client/app/widgets/pin_code_field_widget.dart';
+import 'package:ukil_chaai_client/app/widgets/primary_appbar_widget.dart';
+import 'package:ukil_chaai_client/app/widgets/primary_button.dart';
+import 'package:ukil_chaai_client/app/widgets/toggle_switch_widget.dart';
 import '../controllers/twofa_security_controller.dart';
 
 class TwofaSecurityView extends GetView<TwofaSecurityController> {

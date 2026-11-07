@@ -52,7 +52,7 @@ class PrimaryDropdown<T> extends StatelessWidget {
           const SizedBox(height: AppSizes.gapXSmall - 2),
         ],
         DropdownButtonFormField<T>(
-          value: value,
+          initialValue: value,
           items: items,
           onChanged: onChanged,
           validator: validator,

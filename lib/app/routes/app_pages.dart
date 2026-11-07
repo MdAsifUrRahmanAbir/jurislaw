@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 
+import '../modules/onboarding/onboarding_screen.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
-import '../../onboarding/onboarding_screen.dart';
 import '../modules/language_selection/bindings/language_selection_binding.dart';
 import '../modules/language_selection/views/language_selection_view.dart';
 import '../modules/auth/login/bindings/login_binding.dart';

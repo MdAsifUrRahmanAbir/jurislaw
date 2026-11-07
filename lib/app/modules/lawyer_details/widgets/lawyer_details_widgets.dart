@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_structure/app/core/constants/app_colors.dart';
-import 'package:my_structure/app/core/constants/app_sizes.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_colors.dart';
 
 class QuickInfoItem extends StatelessWidget {
   final IconData icon;
@@ -42,7 +41,7 @@ class ReviewCard extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.grey.withOpacity(0.05),
+        color: Colors.grey.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(

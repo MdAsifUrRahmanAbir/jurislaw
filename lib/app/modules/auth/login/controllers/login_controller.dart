@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/services/api_endpoint.dart';
-import 'package:my_structure/app/core/services/api_service.dart';
-import 'package:my_structure/app/core/services/local_storage_service.dart';
-import 'package:my_structure/app/core/services/app_snackbar.dart';
-import 'package:my_structure/app/routes/app_pages.dart';
+import 'package:ukil_chaai_client/app/core/services/api_endpoint.dart';
+import 'package:ukil_chaai_client/app/core/services/api_service.dart';
+import 'package:ukil_chaai_client/app/core/services/local_storage_service.dart';
+import 'package:ukil_chaai_client/app/core/services/app_snackbar.dart';
+import 'package:ukil_chaai_client/app/routes/app_pages.dart';
 import '../../models/send_otp_model.dart';
 import '../../models/verify_otp_model.dart';
 

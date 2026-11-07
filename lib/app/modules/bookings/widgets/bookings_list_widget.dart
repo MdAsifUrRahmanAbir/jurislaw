@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/constants/app_colors.dart';
-import 'package:my_structure/app/core/constants/app_sizes.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_colors.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_sizes.dart';
 
 class BookingsListWidget extends StatelessWidget {
   final bool isPast;
@@ -21,7 +21,7 @@ class BookingsListWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(AppSizes.radiusMid),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -33,7 +33,7 @@ class BookingsListWidget extends StatelessWidget {
                 width: 60,
                 height: 60,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
                 ),
                 child: const Icon(Icons.calendar_month_rounded, color: AppColors.primary),
@@ -57,7 +57,7 @@ class BookingsListWidget extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: isPast ? AppColors.greyLight : AppColors.success.withOpacity(0.1),
+                        color: isPast ? AppColors.greyLight : AppColors.success.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(

@@ -31,7 +31,7 @@ class ToggleSwitchWidget extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: (activeColor ?? AppColors.primary).withOpacity(0.1),
+              color: (activeColor ?? AppColors.primary).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
             ),
             child: Icon(
@@ -68,7 +68,7 @@ class ToggleSwitchWidget extends StatelessWidget {
         Switch(
           value: value,
           onChanged: onChanged,
-          activeColor: activeColor ?? AppColors.primary,
+          activeThumbColor: activeColor ?? AppColors.primary,
         ),
       ],
     );

@@ -2,8 +2,9 @@
 /// Import this in any widget file that needs the base shared widgets.
 ///
 /// Usage:
-///   import 'package:my_structure/app/core/utils/app_widget_imports.dart';
+///   import 'package:ukil_chaai_client/app/core/utils/app_widget_imports.dart';
 ///
+library;
 export 'package:flutter/material.dart';
 export 'package:get/get.dart';
 

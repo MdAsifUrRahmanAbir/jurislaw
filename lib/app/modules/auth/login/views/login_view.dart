@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/constants/app_colors.dart';
-import 'package:my_structure/app/core/constants/app_sizes.dart';
-import 'package:my_structure/app/core/constants/app_strings.dart';
-import 'package:my_structure/app/widgets/primary_button.dart';
-import 'package:my_structure/app/widgets/primary_input_field.dart';
-import 'package:my_structure/app/widgets/rich_text_widget.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_colors.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_sizes.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_strings.dart';
+import 'package:ukil_chaai_client/app/widgets/primary_button.dart';
+import 'package:ukil_chaai_client/app/widgets/primary_input_field.dart';
+import 'package:ukil_chaai_client/app/widgets/rich_text_widget.dart';
 
 import '../controllers/login_controller.dart';
 

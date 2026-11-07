@@ -1,4 +1,4 @@
-import 'package:my_structure/app/core/services/api_endpoint.dart';
+import 'package:ukil_chaai_client/app/core/services/api_endpoint.dart';
 
 import '../utils/app_logger.dart';
 import 'api_method.dart';

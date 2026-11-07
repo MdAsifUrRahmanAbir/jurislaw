@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/constants/app_colors.dart';
-import 'package:my_structure/app/core/constants/app_sizes.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_colors.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_sizes.dart';
 import '../controllers/language_selection_controller.dart';
 import '../widgets/language_card.dart';
 

@@ -57,7 +57,7 @@ class _SplashMobileState extends State<SplashMobile> with SingleTickerProviderSt
                     borderRadius: BorderRadius.circular(AppSizes.radiusLarge),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.15),
+                        color: Colors.black.withValues(alpha: 0.15),
                         blurRadius: 20,
                         spreadRadius: 2,
                       ),
@@ -84,7 +84,7 @@ class _SplashMobileState extends State<SplashMobile> with SingleTickerProviderSt
                   AppStrings.appTagline,
                   style: TextStyle(
                     fontSize: AppSizes.fontMedium,
-                    color: Colors.white.withOpacity(0.75),
+                    color: Colors.white.withValues(alpha: 0.75),
                   ),
                 ),
                 const SizedBox(height: AppSizes.gapXXLarge * 2),
@@ -94,7 +94,7 @@ class _SplashMobileState extends State<SplashMobile> with SingleTickerProviderSt
                   child: CircularProgressIndicator(
                     strokeWidth: 2.5,
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.white.withOpacity(0.7),
+                      Colors.white.withValues(alpha: 0.7),
                     ),
                   ),
                 ),

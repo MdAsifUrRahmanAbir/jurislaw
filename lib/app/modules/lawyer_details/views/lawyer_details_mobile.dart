@@ -41,7 +41,7 @@ class LawyerDetailsMobile extends GetView<LawyerDetailsController> {
                 decoration: BoxDecoration(
                   color: Colors.white,
                   boxShadow: [
-                    BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, -5)),
+                    BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, -5)),
                   ],
                 ),
                 child: PrimaryButton(
@@ -166,7 +166,7 @@ class LawyerDetailsMobile extends GetView<LawyerDetailsController> {
                 runSpacing: 4,
                 children: controller.lawyer.practiceAreas.map((area) => Chip(
                   label: Text(area),
-                  backgroundColor: AppColors.gold.withOpacity(0.1),
+                  backgroundColor: AppColors.gold.withValues(alpha: 0.1),
                   labelStyle: const TextStyle(color: AppColors.gold, fontSize: 12, fontWeight: FontWeight.bold),
                   side: BorderSide.none,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
@@ -369,7 +369,7 @@ class LawyerDetailsMobile extends GetView<LawyerDetailsController> {
               decoration: BoxDecoration(
                 border: Border.all(color: AppColors.divider, style: BorderStyle.solid),
                 borderRadius: BorderRadius.circular(8),
-                color: Colors.grey.withOpacity(0.05),
+                color: Colors.grey.withValues(alpha: 0.05),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -392,7 +392,7 @@ class LawyerDetailsMobile extends GetView<LawyerDetailsController> {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.05),
+              color: AppColors.primary.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -428,7 +428,7 @@ class LawyerDetailsMobile extends GetView<LawyerDetailsController> {
               color: Colors.white,
               borderRadius: BorderRadius.circular(16),
               boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 10, offset: const Offset(0, 4)),
+                BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 10, offset: const Offset(0, 4)),
               ],
             ),
             child: Column(
@@ -461,9 +461,9 @@ class LawyerDetailsMobile extends GetView<LawyerDetailsController> {
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.05),
+              color: AppColors.primary.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.primary.withOpacity(0.1)),
+              border: Border.all(color: AppColors.primary.withValues(alpha: 0.1)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -619,7 +619,7 @@ class _PaymentTile extends StatelessWidget {
       child: ListTile(
         onTap: onTap,
         selected: isSelected,
-        tileColor: isSelected ? AppColors.gold.withOpacity(0.05) : Colors.transparent,
+        tileColor: isSelected ? AppColors.gold.withValues(alpha: 0.05) : Colors.transparent,
         shape: RoundedRectangleBorder(
           side: BorderSide(color: isSelected ? AppColors.gold : AppColors.divider, width: isSelected ? 2 : 1),
           borderRadius: BorderRadius.circular(12),
@@ -657,7 +657,7 @@ class _TypeIcon extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 12),
           decoration: BoxDecoration(
-            color: isSelected ? AppColors.gold.withOpacity(0.1) : Colors.white,
+            color: isSelected ? AppColors.gold.withValues(alpha: 0.1) : Colors.white,
             borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
             border: Border.all(color: isSelected ? AppColors.gold : AppColors.divider),
           ),

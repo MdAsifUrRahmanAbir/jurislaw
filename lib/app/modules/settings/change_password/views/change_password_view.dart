@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/constants/app_colors.dart';
-import 'package:my_structure/app/core/constants/app_sizes.dart';
-import 'package:my_structure/app/core/constants/app_strings.dart';
-import 'package:my_structure/app/widgets/primary_appbar_widget.dart';
-import 'package:my_structure/app/widgets/primary_button.dart';
-import 'package:my_structure/app/widgets/primary_input_field.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_colors.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_sizes.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_strings.dart';
+import 'package:ukil_chaai_client/app/widgets/primary_appbar_widget.dart';
+import 'package:ukil_chaai_client/app/widgets/primary_button.dart';
+import 'package:ukil_chaai_client/app/widgets/primary_input_field.dart';
 import '../controllers/change_password_controller.dart';
 
 class ChangePasswordView extends GetView<ChangePasswordController> {
@@ -27,7 +27,7 @@ class ChangePasswordView extends GetView<ChangePasswordController> {
               Container(
                 padding: const EdgeInsets.all(AppSizes.paddingMid),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
                 ),
                 child: const Row(

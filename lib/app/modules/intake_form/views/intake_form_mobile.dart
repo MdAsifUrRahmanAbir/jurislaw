@@ -33,7 +33,7 @@ class IntakeFormMobile extends GetView<IntakeFormController> {
                   label: Text(cat.split(' / ').last),
                   selected: isSelected,
                   onSelected: (_) => controller.toggleCategory(cat),
-                  selectedColor: AppColors.gold.withOpacity(0.2),
+                  selectedColor: AppColors.gold.withValues(alpha: 0.2),
                   labelStyle: TextStyle(color: isSelected ? AppColors.gold : Colors.black, fontSize: 12),
                   side: BorderSide(color: isSelected ? AppColors.gold : Colors.grey[300]!),
                 );
@@ -104,7 +104,7 @@ class IntakeFormMobile extends GetView<IntakeFormController> {
                       Obx(() => Switch(
                         value: controller.isEmergency.value,
                         onChanged: (val) => controller.isEmergency.value = val,
-                        activeColor: AppColors.error,
+                        activeThumbColor: AppColors.error,
                       )),
                     ],
                   ),
@@ -113,7 +113,7 @@ class IntakeFormMobile extends GetView<IntakeFormController> {
                         margin: const EdgeInsets.only(top: 12),
                         padding: const EdgeInsets.all(8),
                         width: double.infinity,
-                        decoration: BoxDecoration(color: AppColors.error.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                        decoration: BoxDecoration(color: AppColors.error.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(8)),
                         child: Row(
                           children: [
                             const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 18),
@@ -179,7 +179,7 @@ class IntakeFormMobile extends GetView<IntakeFormController> {
         fillColor: Colors.white,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: AppColors.divider)),
       ),
-      value: value,
+      initialValue: value,
       items: items.map((e) => DropdownMenuItem(value: e, child: Text(e, style: const TextStyle(fontSize: 14)))).toList(),
       onChanged: onChanged,
     );

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/constants/app_colors.dart';
-import 'package:my_structure/app/core/constants/app_sizes.dart';
-import 'package:my_structure/app/widgets/lawyer_card.dart';
-import 'package:my_structure/app/core/services/local_storage_service.dart';
-import 'package:my_structure/app/routes/app_pages.dart';
-import 'package:my_structure/app/data/models/lawyer_model.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_colors.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_sizes.dart';
+import 'package:ukil_chaai_client/app/widgets/lawyer_card.dart';
+import 'package:ukil_chaai_client/app/core/services/local_storage_service.dart';
+import 'package:ukil_chaai_client/app/routes/app_pages.dart';
+import 'package:ukil_chaai_client/app/data/models/lawyer_model.dart';
 import '../controllers/home_controller.dart';
 
 

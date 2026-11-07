@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/constants/app_colors.dart';
-import 'package:my_structure/app/core/constants/app_sizes.dart';
-import 'package:my_structure/app/core/constants/app_strings.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_colors.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_sizes.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_strings.dart';
 import '../controllers/splash_controller.dart';
 
 part 'splash_mobile.dart';

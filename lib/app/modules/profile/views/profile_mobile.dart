@@ -38,7 +38,7 @@ class ProfileMobile extends GetView<ProfileController> {
                         children: [
                           CircleAvatar(
                             radius: 48,
-                            backgroundColor: Colors.white.withOpacity(0.2),
+                            backgroundColor: Colors.white.withValues(alpha: 0.2),
                             child: Obx(
                               () => controller.userAvatar.value.isNotEmpty
                                   ? ClipOval(
@@ -91,7 +91,7 @@ class ProfileMobile extends GetView<ProfileController> {
                           controller.userEmail.value,
                           style: TextStyle(
                             fontSize: AppSizes.fontSmall,
-                            color: Colors.white.withOpacity(0.8),
+                            color: Colors.white.withValues(alpha: 0.8),
                           ),
                         ),
                       ),

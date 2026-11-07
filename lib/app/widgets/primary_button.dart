@@ -49,7 +49,7 @@ class PrimaryButton extends StatelessWidget {
               onPressed: isLoading ? null : onPressed,
               style: ElevatedButton.styleFrom(
                 backgroundColor: bg,
-                disabledBackgroundColor: bg.withOpacity(0.6),
+                disabledBackgroundColor: bg.withValues(alpha: 0.6),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
                 ),

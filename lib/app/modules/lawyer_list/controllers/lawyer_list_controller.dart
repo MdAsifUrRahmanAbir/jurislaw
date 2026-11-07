@@ -1,53 +1,173 @@
+import 'dart:async';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/data/models/lawyer_model.dart';
-import '../../home/controllers/home_controller.dart';
+import 'package:ukil_chaai_client/app/core/services/api_endpoint.dart';
+import 'package:ukil_chaai_client/app/core/services/api_service.dart';
+import 'package:ukil_chaai_client/app/data/models/lawyer_model.dart';
+import '../models/advocate_list_model.dart';
 
+/// Advocate directory — A4.1 GET /advocates, A4.2 GET /advocates/filters.
 class LawyerListController extends GetxController {
-  final allLawyers = <Lawyer>[].obs;
+  final searchCtrl = TextEditingController();
+  final scrollCtrl = ScrollController();
+  Timer? _debounce;
+
+  // ── Results ─────────────────────────────────────────────────────────────────
   final filteredLawyers = <Lawyer>[].obs;
+  final isLoading = false.obs; // first page / refresh
+  final isLoadingMore = false.obs; // next pages
+  final totalCount = 0.obs;
+  int _page = 1;
+  bool _hasMore = true;
 
-  // Filter States
-  final selectedArea = 'সব'.obs;
-  final selectedLocation = 'সব'.obs;
-  final minExperience = 0.obs;
-  final minRating = 0.0.obs;
-  final maxFee = 10000.0.obs;
+  // ── Filter options (from /advocates/filters) ───────────────────────────────
+  final areas = <String>[].obs;
+  final divisions = <String>[].obs;
+  final districts = <String>[].obs;
+  final sorts = <String>['recommended', 'experience', 'price_low', 'price_high', 'name'].obs;
 
-  final areas = ['সব', 'পারিবারিক', 'ফৌজদারি', 'ভূমি', 'ডিভোর্স', 'ব্যবসায়িক', 'ট্যাক্স', 'শ্রম আইন', 'রিট'];
-  final locations = ['সব', 'ঢাকা', 'চট্টগ্রাম', 'সিলেট', 'রাজশাহী'];
+  // ── Applied filters ('' = not sent) ─────────────────────────────────────────
+  final query = ''.obs;
+  final selectedArea = ''.obs;
+  final selectedDivision = ''.obs;
+  final selectedDistrict = ''.obs;
+  final selectedSort = 'recommended'.obs;
+  final availableOnly = false.obs;
+
+  bool get hasActiveFilters =>
+      selectedArea.value.isNotEmpty ||
+      selectedDivision.value.isNotEmpty ||
+      selectedDistrict.value.isNotEmpty ||
+      availableOnly.value ||
+      selectedSort.value != 'recommended';
 
   @override
   void onInit() {
     super.onInit();
-    // Get lawyers from HomeController if available, or use dummy
-    final homeController = Get.find<HomeController>();
-    allLawyers.assignAll(homeController.lawyers);
-    applyFilters();
+    scrollCtrl.addListener(_onScroll);
+    getFilters();
+    getAdvocates();
   }
 
-  void applyFilters() {
-    filteredLawyers.assignAll(allLawyers.where((lawyer) {
-      final matchArea = selectedArea.value == 'All' || 
-          lawyer.practiceAreas.contains(selectedArea.value) || 
-          lawyer.specialty.contains(selectedArea.value);
-      
-      final matchLoc = selectedLocation.value == 'All' || 
-          lawyer.location.toLowerCase().contains(selectedLocation.value.toLowerCase());
-          
-      final matchExp = lawyer.experience >= minExperience.value;
-      final matchRating = lawyer.rating >= minRating.value;
-      final matchFee = lawyer.fee <= maxFee.value;
+  // ── A4.2 Filter values ─────────────────────────────────────────────────────
+  Future<void> getFilters() async {
+    final res = await ApiServices.get<AdvocateFiltersModel>(
+      AdvocateFiltersModel.fromJson,
+      ApiEndpoint.advocateFiltersUrl,
+      showErrorMessage: false,
+    );
+    if (res == null) return;
+    areas.assignAll(res.practiceAreas);
+    divisions.assignAll(res.divisions);
+    districts.assignAll(res.districts);
+    sorts.assignAll(res.sorts);
+  }
 
-      return matchArea && matchLoc && matchExp && matchRating && matchFee;
-    }).toList());
+  // ── A4.1 List advocates ────────────────────────────────────────────────────
+  Future<void> getAdvocates({bool loadMore = false}) async {
+    if (loadMore) {
+      if (!_hasMore || isLoadingMore.value || isLoading.value) return;
+      isLoadingMore.value = true;
+    } else {
+      _page = 1;
+      _hasMore = true;
+      isLoading.value = true;
+    }
+
+    try {
+      final res = await ApiServices.get<AdvocateListModel>(
+        AdvocateListModel.fromJson,
+        '${ApiEndpoint.advocatesUrl}?${_queryString(loadMore ? _page + 1 : 1)}',
+      );
+      if (res != null) {
+        final items = res.data.map((e) => e.toLawyer()).toList();
+        if (loadMore) {
+          filteredLawyers.addAll(items);
+        } else {
+          filteredLawyers.assignAll(items);
+        }
+        _page = res.currentPage;
+        _hasMore = res.hasMore;
+        totalCount.value = res.total;
+      }
+    } finally {
+      isLoading.value = false;
+      isLoadingMore.value = false;
+    }
+  }
+
+  Future<void> refreshList() => getAdvocates();
+
+  String _queryString(int page) {
+    final params = <String, String>{
+      'sort': selectedSort.value,
+      'page': '$page',
+      if (query.value.isNotEmpty) 'q': query.value,
+      if (selectedArea.value.isNotEmpty) 'practice_area': selectedArea.value,
+      if (selectedDivision.value.isNotEmpty) 'division': selectedDivision.value,
+      if (selectedDistrict.value.isNotEmpty) 'district': selectedDistrict.value,
+      if (availableOnly.value) 'available_only': '1',
+    };
+    return Uri(queryParameters: params).query;
+  }
+
+  void _onScroll() {
+    if (scrollCtrl.position.pixels >= scrollCtrl.position.maxScrollExtent - 200) {
+      getAdvocates(loadMore: true);
+    }
+  }
+
+  // ── UI actions ──────────────────────────────────────────────────────────────
+  void onSearchChanged(String value) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      if (query.value == value.trim()) return;
+      query.value = value.trim();
+      getAdvocates();
+    });
+  }
+
+  void applyFilters() => getAdvocates();
+
+  void clearArea() {
+    selectedArea.value = '';
+    getAdvocates();
+  }
+
+  void clearDivision() {
+    selectedDivision.value = '';
+    getAdvocates();
+  }
+
+  void clearDistrict() {
+    selectedDistrict.value = '';
+    getAdvocates();
+  }
+
+  void clearAvailableOnly() {
+    availableOnly.value = false;
+    getAdvocates();
+  }
+
+  void clearSort() {
+    selectedSort.value = 'recommended';
+    getAdvocates();
   }
 
   void resetFilters() {
-    selectedArea.value = 'All';
-    selectedLocation.value = 'All';
-    minExperience.value = 0;
-    minRating.value = 0.0;
-    maxFee.value = 10000.0;
-    applyFilters();
+    selectedArea.value = '';
+    selectedDivision.value = '';
+    selectedDistrict.value = '';
+    selectedSort.value = 'recommended';
+    availableOnly.value = false;
+    getAdvocates();
+  }
+
+  @override
+  void onClose() {
+    _debounce?.cancel();
+    searchCtrl.dispose();
+    scrollCtrl.dispose();
+    super.onClose();
   }
 }

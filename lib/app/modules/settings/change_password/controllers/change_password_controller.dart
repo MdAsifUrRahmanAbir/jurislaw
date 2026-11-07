@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/constants/app_strings.dart';
+import 'package:ukil_chaai_client/app/core/constants/app_strings.dart';
 
 class ChangePasswordController extends GetxController {
   final formKey = GlobalKey<FormState>();

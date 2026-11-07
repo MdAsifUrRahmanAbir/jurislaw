@@ -53,7 +53,7 @@ class PinCodeFieldWidget extends StatelessWidget {
       ),
       submittedPinTheme: defaultPinTheme.copyWith(
         decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.2),
+          color: AppColors.primary.withValues(alpha: 0.2),
           borderRadius: BorderRadius.circular(AppSizes.radius),
           border: Border.all(color: AppColors.primary),
         ),

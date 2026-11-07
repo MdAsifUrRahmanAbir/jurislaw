@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/data/models/lawyer_model.dart';
+import 'package:ukil_chaai_client/app/data/models/lawyer_model.dart';
 
 class LawyerDetailsController extends GetxController {
   late Lawyer lawyer;

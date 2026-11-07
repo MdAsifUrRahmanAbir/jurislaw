@@ -21,7 +21,7 @@ class LawyerCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppSizes.radiusMid),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -31,12 +31,15 @@ class LawyerCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(AppSizes.radiusSmall),
-              child: Image.network(
-                lawyer.photo,
-                width: 80,
-                height: 80,
-                fit: BoxFit.cover,
-              ),
+              child: lawyer.photo.isEmpty
+                  ? _photoPlaceholder()
+                  : Image.network(
+                      lawyer.photo,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => _photoPlaceholder(),
+                    ),
             ),
             const SizedBox(width: AppSizes.gapMid),
             Expanded(
@@ -46,13 +49,17 @@ class LawyerCard extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        lawyer.name,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: AppSizes.fontMedium,
+                      Expanded(
+                        child: Text(
+                          lawyer.name,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: AppSizes.fontMedium,
+                          ),
                         ),
                       ),
+                      if (lawyer.rating > 0)
                       Row(
                         children: [
                           const Icon(Icons.star, color: AppColors.gold, size: 14),
@@ -104,10 +111,13 @@ class LawyerCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '৳${lawyer.fee}',
-                        style: const TextStyle(
+                        lawyer.fee > 0
+                            ? '${'starting_from'.tr} ৳${lawyer.fee.toStringAsFixed(0)}'
+                            : 'no_open_slots'.tr,
+                        style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.primary,
+                          fontSize: lawyer.fee > 0 ? null : 10,
+                          color: lawyer.fee > 0 ? AppColors.primary : AppColors.textSecondary,
                         ),
                       ),
                     ],
@@ -120,4 +130,11 @@ class LawyerCard extends StatelessWidget {
       ),
     );
   }
+
+  Widget _photoPlaceholder() => Container(
+        width: 80,
+        height: 80,
+        color: AppColors.gold.withValues(alpha: 0.1),
+        child: const Icon(Icons.person, color: AppColors.gold, size: 40),
+      );
 }

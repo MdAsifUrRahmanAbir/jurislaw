@@ -25,6 +25,8 @@ class LawyerListMobile extends GetView<LawyerListController> {
             padding: const EdgeInsets.all(AppSizes.paddingMid),
             color: AppColors.primary,
             child: TextField(
+              controller: controller.searchCtrl,
+              textInputAction: TextInputAction.search,
               decoration: InputDecoration(
                 hintText: 'search_hint'.tr,
                 prefixIcon: const Icon(Icons.search, color: AppColors.textHint),
@@ -36,28 +38,41 @@ class LawyerListMobile extends GetView<LawyerListController> {
                 ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
               ),
-              onChanged: (val) {
-                // Implement search logic if needed
-              },
+              onChanged: controller.onSearchChanged,
             ),
           ),
-          
+
           // Filter Chips Row
           _buildActiveFilters(),
 
           // Result List
           Expanded(
             child: Obx(() {
-              if (controller.filteredLawyers.isEmpty) {
-                return _buildEmptyState();
+              if (controller.isLoading.value && controller.filteredLawyers.isEmpty) {
+                return const Center(child: CircularProgressIndicator(color: AppColors.gold));
               }
-              return ListView.builder(
-                padding: const EdgeInsets.all(AppSizes.paddingMid),
-                itemCount: controller.filteredLawyers.length,
-                itemBuilder: (context, index) {
-                  final lawyer = controller.filteredLawyers[index];
-                  return LawyerCard(lawyer: lawyer);
-                },
+              return RefreshIndicator(
+                color: AppColors.gold,
+                onRefresh: controller.refreshList,
+                child: controller.filteredLawyers.isEmpty
+                    ? _buildEmptyState()
+                    : ListView.builder(
+                        controller: controller.scrollCtrl,
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(AppSizes.paddingMid),
+                        itemCount: controller.filteredLawyers.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == controller.filteredLawyers.length) {
+                            return Obx(() => controller.isLoadingMore.value
+                                ? const Padding(
+                                    padding: EdgeInsets.all(16),
+                                    child: Center(child: CircularProgressIndicator(color: AppColors.gold)),
+                                  )
+                                : const SizedBox(height: 16));
+                          }
+                          return LawyerCard(lawyer: controller.filteredLawyers[index]);
+                        },
+                      ),
               );
             }),
           ),
@@ -68,11 +83,7 @@ class LawyerListMobile extends GetView<LawyerListController> {
 
   Widget _buildActiveFilters() {
     return Obx(() {
-      final hasFilters = controller.selectedArea.value != 'All' || 
-                         controller.selectedLocation.value != 'All' || 
-                         controller.minExperience.value > 0;
-      
-      if (!hasFilters) return const SizedBox.shrink();
+      if (!controller.hasActiveFilters) return const SizedBox.shrink();
 
       return Container(
         height: 50,
@@ -80,12 +91,16 @@ class LawyerListMobile extends GetView<LawyerListController> {
         child: ListView(
           scrollDirection: Axis.horizontal,
           children: [
-            if (controller.selectedArea.value != 'All')
-              FilterChipWidget(label: controller.selectedArea.value == 'All' ? 'all'.tr : controller.selectedArea.value, onClear: () => controller.selectedArea.value = 'All'),
-            if (controller.selectedLocation.value != 'All')
-              FilterChipWidget(label: controller.selectedLocation.value == 'All' ? 'all'.tr : controller.selectedLocation.value, onClear: () => controller.selectedLocation.value = 'All'),
-            if (controller.minExperience.value > 0)
-              FilterChipWidget(label: '${controller.minExperience.value}+ ${'years_plus'.tr}', onClear: () => controller.minExperience.value = 0),
+            if (controller.selectedSort.value != 'recommended')
+              FilterChipWidget(label: 'sort_${controller.selectedSort.value}'.tr, onClear: controller.clearSort),
+            if (controller.selectedArea.value.isNotEmpty)
+              FilterChipWidget(label: controller.selectedArea.value, onClear: controller.clearArea),
+            if (controller.selectedDivision.value.isNotEmpty)
+              FilterChipWidget(label: controller.selectedDivision.value, onClear: controller.clearDivision),
+            if (controller.selectedDistrict.value.isNotEmpty)
+              FilterChipWidget(label: controller.selectedDistrict.value, onClear: controller.clearDistrict),
+            if (controller.availableOnly.value)
+              FilterChipWidget(label: 'available_only'.tr, onClear: controller.clearAvailableOnly),
           ],
         ),
       );
@@ -93,25 +108,54 @@ class LawyerListMobile extends GetView<LawyerListController> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.search_off_rounded, size: 80, color: Colors.grey[300]),
-          const SizedBox(height: 16),
-          Text('no_advocates_found'.tr, style: const TextStyle(color: AppColors.textSecondary)),
-          TextButton(
+    // ListView so pull-to-refresh still works on an empty result.
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      children: [
+        const SizedBox(height: 120),
+        Icon(Icons.search_off_rounded, size: 80, color: Colors.grey[300]),
+        const SizedBox(height: 16),
+        Text('no_advocates_found'.tr, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textSecondary)),
+        Center(
+          child: TextButton(
             onPressed: controller.resetFilters,
             child: Text('reset_filters'.tr, style: const TextStyle(color: AppColors.gold)),
           ),
-        ],
-      ),
+        ),
+      ],
     );
+  }
+
+  Widget _choiceWrap({
+    required RxList<String> options,
+    required RxString selected,
+    String Function(String)? labelOf,
+  }) {
+    return Obx(() => Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: [
+            ChoiceChip(
+              label: Text('all'.tr),
+              selected: selected.value.isEmpty,
+              onSelected: (_) => selected.value = '',
+              selectedColor: AppColors.gold.withValues(alpha: 0.2),
+            ),
+            ...options.map((opt) => ChoiceChip(
+                  label: Text(labelOf?.call(opt) ?? opt),
+                  selected: selected.value == opt,
+                  onSelected: (_) => selected.value = opt,
+                  selectedColor: AppColors.gold.withValues(alpha: 0.2),
+                  labelStyle: TextStyle(color: selected.value == opt ? AppColors.gold : Colors.black),
+                )),
+          ],
+        ));
   }
 
   void _showFilterSheet(BuildContext context) {
     Get.bottomSheet(
       Container(
+        constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.85),
         padding: const EdgeInsets.all(AppSizes.paddingLarge),
         decoration: const BoxDecoration(
           color: Colors.white,
@@ -124,72 +168,73 @@ class LawyerListMobile extends GetView<LawyerListController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   Text('advanced_filters'.tr, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                   IconButton(onPressed: () => Get.back(), icon: const Icon(Icons.close)),
+                  Text('advanced_filters'.tr, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  IconButton(onPressed: () => Get.back(), icon: const Icon(Icons.close)),
                 ],
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
 
-              Text('practice_area'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text('sort_by'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 12),
               Obx(() => Wrap(
-                spacing: 8,
-                children: controller.areas.map((area) => ChoiceChip(
-                  label: Text(area),
-                  selected: controller.selectedArea.value == area,
-                  onSelected: (val) => controller.selectedArea.value = area,
-                  selectedColor: AppColors.gold.withOpacity(0.2),
-                  labelStyle: TextStyle(color: controller.selectedArea.value == area ? AppColors.gold : Colors.black),
-                )).toList(),
-              )),
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: controller.sorts
+                        .map((s) => ChoiceChip(
+                              label: Text('sort_$s'.tr),
+                              selected: controller.selectedSort.value == s,
+                              onSelected: (_) => controller.selectedSort.value = s,
+                              selectedColor: AppColors.gold.withValues(alpha: 0.2),
+                              labelStyle: TextStyle(
+                                  color: controller.selectedSort.value == s ? AppColors.gold : Colors.black),
+                            ))
+                        .toList(),
+                  )),
+
+              if (controller.areas.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                Text('practice_area'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                _choiceWrap(options: controller.areas, selected: controller.selectedArea),
+              ],
+
+              if (controller.divisions.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                Text('division'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                _choiceWrap(options: controller.divisions, selected: controller.selectedDivision),
+              ],
+
+              if (controller.districts.isNotEmpty) ...[
+                const SizedBox(height: 24),
+                Text('district'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
+                _choiceWrap(options: controller.districts, selected: controller.selectedDistrict),
+              ],
+
+              const SizedBox(height: 16),
+              Obx(() => SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    activeThumbColor: AppColors.gold,
+                    title: Text('available_only'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    value: controller.availableOnly.value,
+                    onChanged: (v) => controller.availableOnly.value = v,
+                  )),
 
               const SizedBox(height: 24),
-              Text('location'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 12),
-              Obx(() => Wrap(
-                spacing: 8,
-                children: controller.locations.map((loc) => ChoiceChip(
-                  label: Text(loc),
-                  selected: controller.selectedLocation.value == loc,
-                  onSelected: (val) => controller.selectedLocation.value = loc,
-                  selectedColor: AppColors.gold.withOpacity(0.2),
-                )).toList(),
-              )),
-
-              const SizedBox(height: 24),
-              Text('experience_years'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-              Obx(() => Slider(
-                value: controller.minExperience.value.toDouble(),
-                min: 0, max: 20, divisions: 4,
-                activeColor: AppColors.gold,
-                label: '${controller.minExperience.value}+ ${'years_plus'.tr}',
-                onChanged: (val) => controller.minExperience.value = val.toInt(),
-              )),
-
-              const SizedBox(height: 24),
-              Text('max_fee'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-              Obx(() => Slider(
-                value: controller.maxFee.value,
-                min: 500, max: 10000, divisions: 19,
-                activeColor: AppColors.gold,
-                label: '৳${controller.maxFee.value.toInt()}',
-                onChanged: (val) => controller.maxFee.value = val,
-              )),
-
-              const SizedBox(height: 32),
               PrimaryButton(
                 text: 'apply_filters'.tr,
                 onPressed: () {
-                  controller.applyFilters();
                   Get.back();
+                  controller.applyFilters();
                 },
               ),
               const SizedBox(height: 12),
               Center(
                 child: TextButton(
                   onPressed: () {
-                    controller.resetFilters();
                     Get.back();
+                    controller.resetFilters();
                   },
                   child: Text('reset_all'.tr, style: const TextStyle(color: Colors.red)),
                 ),

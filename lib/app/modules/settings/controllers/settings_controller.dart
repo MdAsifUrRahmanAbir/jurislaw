@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:my_structure/app/core/services/local_storage_service.dart';
-import 'package:my_structure/app/routes/app_pages.dart';
+import 'package:ukil_chaai_client/app/core/services/local_storage_service.dart';
+import 'package:ukil_chaai_client/app/routes/app_pages.dart';
 
 class SettingsController extends GetxController {
   final isDarkMode = false.obs;
